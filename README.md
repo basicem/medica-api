@@ -1,4 +1,4 @@
-#MEDICA
+# MEDICA
 
 ## Getting started
 
