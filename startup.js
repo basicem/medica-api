@@ -9,6 +9,8 @@ app.get('/', (req, res) => {
   res.json({ status: 'Prvi prolaz :)' });
 });
 
-require('./app/routes/health-check.routes')(app);
+app.use(require('./app/routes'));
+
+// require('./app/routes/health-check.routes')(app);
 
 app.listen(port);

@@ -1,7 +1,6 @@
-module.exports = (app) => {
-  const healthCheck = require('../controllers/health-check.controller.js');
-  const router = require('express').Router();
+const router = require('express').Router();
+const healthCheck = require('../controllers/health-check.controller.js');
 
-  router.get('/', healthCheck.status);
-  app.use('/api/health-check', router);
-};
+router.get('/', healthCheck.status);
+
+module.exports = router;
