@@ -11,6 +11,5 @@ app.get('/', (req, res) => {
 
 app.use(require('./app/routes'));
 
-// require('./app/routes/health-check.routes')(app);
 
 app.listen(port);
