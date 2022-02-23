@@ -1,30 +1,12 @@
-const db = require("../models");
+const doctorServices = require("../services/doctor.services");
 
-exports.create = (req, res) => {
-  const d = {
-    image: req.body.image,
-    title: req.body.title,
-    firstName: req.body.title,
-    lastName: req.body.title,
-    practiceArea: req.body.title,
-    adress: req.body.title,
-    city: req.body.title,
-    zip: req.body.title,
-    country: req.body.title,
-    phoneNumber: req.body.title,
-    website: req.body.title,
-    workingHours: req.body.title,
-    email: req.body.title,
-  };
+exports.create = async (req, res) => {
+  try {
+    const doctor = await doctorServices.createDoctor(req.body);
 
-  db.Doctor.create(d)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Doctor.",
-      });
-    });
+    return res.status(200).json(doctor);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
 };
