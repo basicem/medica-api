@@ -1,3 +1,4 @@
+const { MedicaError } = require("../exceptions");
 const db = require("../models");
 
 exports.createDoctor = async ({
@@ -48,6 +49,6 @@ exports.createDoctor = async ({
     return doctor;
   } catch (err) {
     console.log(err);
-    throw new Error();
+    throw new MedicaError("Unable to create doctor");
   }
 };

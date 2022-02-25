@@ -95,11 +95,8 @@ module.exports = {
     await queryInterface.createTable("practice_area", {
       id: {
         allowNull: false,
-
         autoIncrement: true,
-
         primaryKey: true,
-
         type: Sequelize.INTEGER,
       },
 
