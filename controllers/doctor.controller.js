@@ -8,7 +8,7 @@ exports.create = async (req, res) => {
 
     const doctor = await doctorServices.createDoctor(value);
 
-    return res.status(200).json(doctor);
+    return res.status(201).json({ id: doctor.id });
   } catch (err) {
     if (err.isJoi) {
       return res.status(400).json({ error: err.details });

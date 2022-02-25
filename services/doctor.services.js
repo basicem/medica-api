@@ -16,6 +16,10 @@ exports.createDoctor = async ({
   workingHours,
   email,
 }) => {
+  if ((await db.Doctor.findOne({ where: { email } })) != null) {
+    throw new MedicaError("Doctor with this email already exists");
+  }
+
   try {
     const doctor = await db.Doctor.create({
       image,
@@ -48,7 +52,6 @@ exports.createDoctor = async ({
 
     return doctor;
   } catch (err) {
-    console.log(err);
     throw new MedicaError("Unable to create doctor");
   }
 };

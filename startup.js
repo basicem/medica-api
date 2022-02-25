@@ -9,3 +9,5 @@ app.use(bodyParser.json());
 app.use(require("./routes"));
 
 app.listen(port);
+
+module.exports = { app };
