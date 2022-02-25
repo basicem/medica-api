@@ -16,7 +16,7 @@ exports.createDoctor = async ({
   workingHours,
   email,
 }) => {
-  if ((await db.Doctor.findOne({ where: { email } })) != null) {
+  if ((await db.Doctor.findOne({ where: { email } })) !== null) {
     throw new MedicaError("Doctor with this email already exists");
   }
 
