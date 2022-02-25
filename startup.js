@@ -1,12 +1,13 @@
-const express = require('express');
+const express = require("express");
 
 const app = express();
 const port = process.env.PORT;
+const bodyParser = require("body-parser");
 
-app.get('/', (req, res) => {
-  res.json({ status: 'Prvi prolaz :)' });
-});
+app.use(bodyParser.json());
 
-app.use(require('./app/routes'));
+app.use(require("./routes"));
 
 app.listen(port);
+
+module.exports = { app };

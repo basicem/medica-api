@@ -4,8 +4,11 @@
   "description": "",
   "main": "startup.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r dotenv/config startup.js"
+    "dev": "nodemon -r dotenv/config startup.js",
+    "test": "cross-env NODE_ENV=test mocha ./tests/*/**",
+    "pretest": "cross-env NODE_ENV=test npm run db:reset",
+    "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
+    "db:create:test": "cross-env NODE_ENV=test npx sequelize-cli db:create"
   },
   "repository": {
     "type": "git",
@@ -18,13 +21,23 @@
   },
   "homepage": "https://github.com/basicem/medica-api#readme",
   "dependencies": {
+    "body-parser": "^1.19.2",
+    "chai": "^4.3.6",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
-    "express": "^4.17.2"
+    "express": "^4.17.2",
+    "joi": "^17.6.0",
+    "mocha": "^9.2.1",
+    "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.16.2",
+    "supertest": "^6.2.2"
   },
   "devDependencies": {
     "eslint": "^8.9.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "sequelize-cli": "^6.4.1"
   }
 }
