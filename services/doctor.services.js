@@ -59,63 +59,38 @@ exports.createDoctor = async ({
 
 exports.getAllDoctors = async ({ name, practiceArea }) => {
   try {
-    let doctors = [];
-    if (typeof name === "undefined" && typeof practiceArea === "undefined") {
-      doctors = await db.Doctor.findAll({
-        include: [
-          {
-            model: db.DoctorPracticeArea,
-
-            include: [{ model: db.PracticeArea, attributes: ["id", "name"] }],
-            attributes: ["id"],
-          },
-          {
-            model: db.WorkingHours,
-            attributes: ["day", "workTimeStart", "workTimeEnd"],
-          },
-        ],
-        attributes: ["image", "first_name", "last_name"],
-      });
-    } else if (typeof name !== "undefined") {
-      doctors = await db.Doctor.findAll({
-        where: { [Op.or]: [{ first_name: name }, { last_name: name }] },
-        include: [
-          {
-            model: db.DoctorPracticeArea,
-
-            include: [{ model: db.PracticeArea, attributes: ["id", "name"] }],
-            attributes: ["id"],
-          },
-          {
-            model: db.WorkingHours,
-            attributes: ["day", "workTimeStart", "workTimeEnd"],
-          },
-        ],
-        attributes: ["image", "first_name", "last_name"],
-      });
-    } else if (typeof practiceArea !== "undefined") {
-      doctors = await db.Doctor.findAll({
-        include: [
-          {
-            model: db.DoctorPracticeArea,
-
-            include: [
-              {
-                model: db.PracticeArea,
-                attributes: ["id", "name"],
-                where: { id: practiceArea },
-              },
-            ],
-            attributes: ["id"],
-          },
-          {
-            model: db.WorkingHours,
-            attributes: ["day", "workTimeStart", "workTimeEnd"],
-          },
-        ],
-        attributes: ["image", "first_name", "last_name"],
-      });
+    const whereStatement = {};
+    let orStatement = {};
+    if (name) {
+      orStatement = { [Op.or]: [{ first_name: name }, { last_name: name }] };
     }
+    if (practiceArea) {
+      whereStatement.practice_area_id = practiceArea;
+    }
+
+    let doctors = [];
+    doctors = await db.Doctor.findAll({
+      where: orStatement,
+      include: [
+        {
+          model: db.DoctorPracticeArea,
+          include: [
+            {
+              model: db.PracticeArea,
+              attributes: ["id", "name"],
+            },
+          ],
+          where: whereStatement,
+          attributes: ["id"],
+        },
+        {
+          model: db.WorkingHours,
+          attributes: ["day", "workTimeStart", "workTimeEnd"],
+        },
+      ],
+      attributes: ["image", "first_name", "last_name"],
+    });
+
     return doctors;
   } catch (err) {
     throw new MedicaError("Unable to return doctors");

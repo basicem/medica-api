@@ -23,25 +23,14 @@ async function create(req, res) {
 
 async function get(req, res) {
   try {
-    // const queries = req.query;
-    // console.log(queries);
     const doctors = await doctorServices.getAllDoctors(req.query);
     return res.status(201).json(doctors);
-    // if (Object.entries(queries).length === 0) {
-    //   console.log("Vrati sve doktore");
-    //   const doctors = await doctorServices.getAllDoctors();
-    //   return res.status(201).json(doctors);
-    // }
-    // if (
-    //   queries.hasOwnProperty("firstName") &&
-    //   queries.hasOwnProperty("lastName")
-    // ) {
-    //   console.log("Pretrazi po imenu");
-    // } else if (queries.hasOwnProperty("practiceArea")) {
-    //   console.log("Pretrazi po practiceArea");
-    // }
   } catch (err) {
+    if (err instanceof MedicaError) {
+      return res.status(400).json({ error: err.message });
+    }
     console.log(err);
+    return res.status(500).json({ error: "Something went wrong" });
   }
 }
 module.exports = { create, get };
