@@ -57,7 +57,7 @@ exports.createDoctor = async ({
   }
 };
 
-exports.getAllDoctors = async ({ name, practiceArea }) => {
+exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
   try {
     const whereStatement = {};
     let orStatement = {};
@@ -70,6 +70,8 @@ exports.getAllDoctors = async ({ name, practiceArea }) => {
 
     let doctors = [];
     doctors = await db.Doctor.findAll({
+      limit: size ? +size : 25,
+      offset: page ? (page - 1) * (size ? +size : 25) : 0,
       where: orStatement,
       include: [
         {
@@ -88,7 +90,7 @@ exports.getAllDoctors = async ({ name, practiceArea }) => {
           attributes: ["day", "workTimeStart", "workTimeEnd"],
         },
       ],
-      attributes: ["image", "first_name", "last_name"],
+      attributes: ["id", "image", "first_name", "last_name"],
     });
 
     return doctors;
