@@ -1,4 +1,5 @@
 const { Op } = require("sequelize");
+const helpers = require("../controllers/helpers");
 const { MedicaError } = require("../exceptions");
 const db = require("../models");
 
@@ -59,6 +60,7 @@ exports.createDoctor = async ({
 
 exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
   try {
+    const { limit, offset } = helpers.pagination(page, size);
     const whereStatement = {};
     let orStatement = {};
     if (name) {
@@ -75,8 +77,8 @@ exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
 
     let doctors = [];
     doctors = await db.Doctor.findAll({
-      limit: size ? +size : 25,
-      offset: page ? (page - 1) * (size ? +size : 25) : 0,
+      limit,
+      offset,
       where: orStatement,
       include: [
         {
