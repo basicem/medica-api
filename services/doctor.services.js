@@ -62,7 +62,12 @@ exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
     const whereStatement = {};
     let orStatement = {};
     if (name) {
-      orStatement = { [Op.or]: [{ first_name: name }, { last_name: name }] };
+      orStatement = {
+        [Op.or]: [
+          { first_name: { [Op.iLike]: `%${name}` } },
+          { last_name: { [Op.iLike]: `%${name}` } },
+        ],
+      };
     }
     if (practiceArea) {
       whereStatement.practice_area_id = practiceArea;
