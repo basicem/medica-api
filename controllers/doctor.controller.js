@@ -2,7 +2,7 @@ const doctorServices = require("../services/doctor.services");
 const { doctorSchema } = require("../schemas/doctor");
 const { MedicaError } = require("../exceptions");
 
-async function create(req, res) {
+const create = async (req, res) => {
   try {
     const value = await doctorSchema.validateAsync(req.body);
 
@@ -19,12 +19,12 @@ async function create(req, res) {
     console.log(err);
     return res.status(500).json({ error: "Something went wrong" });
   }
-}
+};
 
-async function get(req, res) {
+const get = async (req, res) => {
   try {
     const doctors = await doctorServices.getAllDoctors(req.query);
-    return res.status(201).json(doctors);
+    return res.status(200).json(doctors);
   } catch (err) {
     if (err instanceof MedicaError) {
       return res.status(400).json({ error: err.message });
@@ -32,5 +32,6 @@ async function get(req, res) {
     console.log(err);
     return res.status(500).json({ error: "Something went wrong" });
   }
-}
+};
+
 module.exports = { create, get };

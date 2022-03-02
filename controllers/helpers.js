@@ -1,15 +1,21 @@
-exports.pagination = (page, size) => {
-  let autoSize = 25;
-  const autoPage = 0;
+const PAGINATION = {
+  PAGE: 0,
+  PAGE_SIZE: 25,
+  MAX_PAGE_SIZE: 1000,
+};
+
+exports.pagination = (page, pageSize) => {
+  let autoSize = PAGINATION.PAGE_SIZE;
+  const autoPage = PAGINATION.PAGE;
   // maximim  size
-  if (size > 1000) {
-    autoSize = 1000;
+  if (pageSize > PAGINATION.MAX_PAGE_SIZE) {
+    autoSize = PAGINATION.MAX_PAGE_SIZE;
   }
   // negative size
-  else if (size < 1) {
-    autoSize = 1;
+  else if (pageSize < PAGINATION.PAGE) {
+    autoSize = PAGINATION.PAGE;
   }
-  const limit = size ? +size : autoSize;
+  const limit = pageSize ? +pageSize : autoSize;
   const offset = page ? (page - 1) * limit : autoPage;
   return { limit, offset };
 };

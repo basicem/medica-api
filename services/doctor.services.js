@@ -1,7 +1,8 @@
 const { Op } = require("sequelize");
-const helpers = require("../controllers/helpers");
+
 const { MedicaError } = require("../exceptions");
 const db = require("../models");
+const helpers = require("../controllers/helpers");
 
 exports.createDoctor = async ({
   image,
@@ -58,25 +59,29 @@ exports.createDoctor = async ({
   }
 };
 
-exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
+exports.getAllDoctors = async ({
+  doctorFilter,
+  practiceAreaFilter,
+  page,
+  size,
+}) => {
   try {
     const { limit, offset } = helpers.pagination(page, size);
     const whereStatement = {};
     let orStatement = {};
-    if (name) {
+    if (doctorFilter) {
       orStatement = {
         [Op.or]: [
-          { first_name: { [Op.iLike]: `%${name}` } },
-          { last_name: { [Op.iLike]: `%${name}` } },
+          { first_name: { [Op.iLike]: `%${doctorFilter}` } },
+          { last_name: { [Op.iLike]: `%${doctorFilter}` } },
         ],
       };
     }
-    if (practiceArea) {
-      whereStatement.practice_area_id = practiceArea;
+    if (practiceAreaFilter) {
+      whereStatement.practice_area_id = practiceAreaFilter;
     }
 
-    let doctors = [];
-    doctors = await db.Doctor.findAll({
+    return await db.Doctor.findAll({
       limit,
       offset,
       where: orStatement,
@@ -97,10 +102,8 @@ exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
           attributes: ["day", "workTimeStart", "workTimeEnd"],
         },
       ],
-      attributes: ["id", "image", "first_name", "last_name"],
+      attributes: ["id", "image", "firstName", "lastName"],
     });
-
-    return doctors;
   } catch (err) {
     throw new MedicaError("Unable to return doctors");
   }
