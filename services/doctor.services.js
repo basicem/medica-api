@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 
 const { MedicaError } = require("../exceptions");
 const db = require("../models");
-const helpers = require("../controllers/helpers");
+const { paginate, getLimitAndOffset } = require("../controllers/helpers");
 
 exports.createDoctor = async ({
   image,
@@ -59,27 +59,25 @@ exports.createDoctor = async ({
   }
 };
 
-exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
+exports.getAllDoctors = async ({ name, practiceArea, page, pageSize }) => {
   try {
-    const { limit, offset } = helpers.pagination(page, size);
-    const whereStatement = {};
-    let orStatement = {};
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+    const practiceAreaFilters = {};
+    const doctorFilters = {};
     if (name) {
-      orStatement = {
-        [Op.or]: [
-          { first_name: { [Op.iLike]: `%${name}` } },
-          { last_name: { [Op.iLike]: `%${name}` } },
-        ],
-      };
+      doctorFilters[Op.or] = [
+        { firstName: { [Op.iLike]: `%${name}` } },
+        { lastName: { [Op.iLike]: `%${name}` } },
+      ];
     }
     if (practiceArea) {
-      whereStatement.practice_area_id = practiceArea;
+      practiceAreaFilters.practiceAreaId = practiceArea;
     }
 
-    return await db.Doctor.findAll({
+    const { rows, count } = await db.Doctor.findAndCountAll({
       limit,
       offset,
-      where: orStatement,
+      where: doctorFilters,
       include: [
         {
           model: db.DoctorPracticeArea,
@@ -89,8 +87,8 @@ exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
               attributes: ["id", "name"],
             },
           ],
-          where: whereStatement,
-          attributes: ["id"],
+          where: practiceAreaFilters,
+          attributes: ["practiceAreaId"],
         },
         {
           model: db.WorkingHours,
@@ -99,7 +97,15 @@ exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
       ],
       attributes: ["id", "image", "firstName", "lastName"],
     });
+
+    return paginate({
+      count,
+      rows,
+      page,
+      pageSize,
+    });
   } catch (err) {
+    console.log(err);
     throw new MedicaError("Unable to return doctors");
   }
 };

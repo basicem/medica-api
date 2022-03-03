@@ -4,7 +4,8 @@ const PAGINATION = {
   MAX_PAGE_SIZE: 1000,
 };
 
-exports.pagination = (page, pageSize) => {
+const getLimitAndOffset = (page, pageSize) => {
+  // Rename to defaultSize
   let autoSize = PAGINATION.PAGE_SIZE;
   const autoPage = PAGINATION.PAGE;
   // maximim  size
@@ -18,4 +19,24 @@ exports.pagination = (page, pageSize) => {
   const limit = pageSize ? +pageSize : autoSize;
   const offset = page ? (page - 1) * limit : autoPage;
   return { limit, offset };
+};
+
+const paginate = ({ count, rows, page, pageSize }) => {
+  // const { limit } = getLimitAndOffset(page, pageSize);
+  const totalPages = Math.ceil(count / +pageSize);
+  const nextPage = totalPages > +page ? +page + 1 : null;
+  const previousPage = +page === 1 ? null : +page - 1;
+
+  return {
+    count,
+    nextPage,
+    previousPage,
+    totalPages,
+    rows,
+  };
+};
+
+module.exports = {
+  paginate,
+  getLimitAndOffset,
 };
