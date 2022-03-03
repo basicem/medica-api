@@ -6,7 +6,7 @@ const doctorSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   practiceArea: Joi.array().items(Joi.number()).required(),
-  adress: Joi.string().min(5).required(),
+  address: Joi.string().min(5).required(),
   city: Joi.string().min(2).required(),
   zip: Joi.string()
     .pattern(/^[0-9]+$/)

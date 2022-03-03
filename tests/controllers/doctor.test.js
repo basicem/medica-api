@@ -26,7 +26,7 @@ describe("POST doctors", async () => {
       firstName: "John",
       lastName: "Doe",
       practiceArea: [pa.id],
-      adress: "Sarajevska 71",
+      address: "Sarajevska 71",
       city: "Sarajevo",
       zip: "71000",
       country: "Bosnia and Hercegovina",
@@ -67,7 +67,7 @@ describe("POST doctors", async () => {
       firstName: "Jane",
       lastName: "Doe",
       practiceArea: [practiceArea.id],
-      adress: "Sarajevska 71",
+      address: "Sarajevska 71",
       city: "Sarajevo",
       zip: "71000",
       country: "Bosnia and Hercegovina",
@@ -82,7 +82,7 @@ describe("POST doctors", async () => {
       title: "Mr.Prim.Prof.Dr.",
       firstName: "Jane",
       lastName: "Doe",
-      adress: "Sarajevska 71",
+      address: "Sarajevska 71",
       city: "Sarajevo",
       zip: "71000",
       country: "Bosnia and Hercegovina",
@@ -115,13 +115,16 @@ describe("POST doctors", async () => {
 });
 
 describe("GET doctors", async () => {
+  const doctorFilterName = "Joe";
+  let practiceArea = null;
+
   beforeEach(async () => {
     await db.DoctorPracticeArea.destroy({ truncate: { cascade: true } });
     await db.WorkingHours.destroy({ truncate: { cascade: true } });
     await db.PracticeArea.destroy({ truncate: { cascade: true } });
     await db.Doctor.destroy({ truncate: { cascade: true } });
 
-    const practiceArea = await db.PracticeArea.create({
+    practiceArea = await db.PracticeArea.create({
       name: "Dermatology",
     });
     const workingHours = [
@@ -134,7 +137,7 @@ describe("GET doctors", async () => {
       title: "Mr.Prim.Prof.Dr.",
       firstName: "Jane",
       lastName: "Driver",
-      adress: "Sarajevska 71",
+      address: "Sarajevska 71",
       city: "Sarajevo",
       zip: "71000",
       country: "Bosnia and Hercegovina",
@@ -145,9 +148,9 @@ describe("GET doctors", async () => {
     const doctor2 = await db.Doctor.create({
       image: "https://upload.wikimedia.org",
       title: "Mr.Prim.Prof.Dr.",
-      firstName: "Joe",
+      firstName: doctorFilterName,
       lastName: "Driver",
-      adress: "Sarajevska 71",
+      address: "Sarajevska 71",
       city: "Sarajevo",
       zip: "71000",
       country: "Bosnia and Hercegovina",
@@ -180,6 +183,7 @@ describe("GET doctors", async () => {
       practiceAreaId: practiceArea.id,
     });
   });
+
   it("Get all doctors", async () => {
     // act
     const response = await request(app).get("/api/doctors");
@@ -189,31 +193,33 @@ describe("GET doctors", async () => {
     expect(response.body).to.have.lengthOf(2);
   });
 
-  it("Get all doctors with name Joe", async () => {
+  it("Get all doctors filtered by name", async () => {
     // act
-    const response = await request(app).get("/api/doctors?doctorFilter=Joe");
+    const response = await request(app).get("/api/doctors?name=Joe");
 
     // assert
     expect(response.status).to.equal(200);
     expect(response.body).to.have.lengthOf(1);
   });
-  // it("Get all doctors with practice area Dermatology", async () => {
-  //   // act
-  //   const response = await request(app).get(
-  //     "/api/doctors?practiceAreaFilter=3"
-  //   );
 
-  //   // assert
-  //   expect(response.status).to.equal(200);
-  //   expect(response.body).to.have.lengthOf(2);
-  // });
-  // it("Get all doctors where practice area is Dermatology and name is Joe", async () => {
-  //   // act
-  //   const response = await request(app).get(
-  //     "/api/doctors?doctorFilter=Joe&practiceAreaFilter=3"
-  //   );
-  //   // assert
-  //   expect(response.status).to.equal(200);
-  //   expect(response.body).to.have.lengthOf(1);
-  // });
+  it("Get all doctors filtered by practice area", async () => {
+    // act
+    const response = await request(app).get(
+      `/api/doctors?practiceArea=${practiceArea.id}`
+    );
+
+    // assert
+    expect(response.status).to.equal(200);
+    expect(response.body).to.have.lengthOf(2);
+  });
+
+  it("Get doctors filtered by practice area and name", async () => {
+    // act
+    const response = await request(app).get(
+      `/api/doctors?name=${doctorFilterName}&practiceArea=${practiceArea.id}`
+    );
+    // assert
+    expect(response.status).to.equal(200);
+    expect(response.body).to.have.lengthOf(1);
+  });
 });

@@ -10,7 +10,7 @@ exports.createDoctor = async ({
   firstName,
   lastName,
   practiceArea,
-  adress,
+  address,
   city,
   zip,
   country,
@@ -29,7 +29,7 @@ exports.createDoctor = async ({
       title,
       firstName,
       lastName,
-      adress,
+      address,
       city,
       zip,
       country,
@@ -59,26 +59,21 @@ exports.createDoctor = async ({
   }
 };
 
-exports.getAllDoctors = async ({
-  doctorFilter,
-  practiceAreaFilter,
-  page,
-  size,
-}) => {
+exports.getAllDoctors = async ({ name, practiceArea, page, size }) => {
   try {
     const { limit, offset } = helpers.pagination(page, size);
     const whereStatement = {};
     let orStatement = {};
-    if (doctorFilter) {
+    if (name) {
       orStatement = {
         [Op.or]: [
-          { first_name: { [Op.iLike]: `%${doctorFilter}` } },
-          { last_name: { [Op.iLike]: `%${doctorFilter}` } },
+          { first_name: { [Op.iLike]: `%${name}` } },
+          { last_name: { [Op.iLike]: `%${name}` } },
         ],
       };
     }
-    if (practiceAreaFilter) {
-      whereStatement.practice_area_id = practiceAreaFilter;
+    if (practiceArea) {
+      whereStatement.practice_area_id = practiceArea;
     }
 
     return await db.Doctor.findAll({
