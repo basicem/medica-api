@@ -4,7 +4,7 @@ const { MedicaError } = require("../exceptions");
 const db = require("../models");
 const { paginate, getLimitAndOffset } = require("../helpers/pagination");
 
-exports.createDoctor = async ({
+const createDoctor = async ({
   image,
   title,
   firstName,
@@ -59,7 +59,7 @@ exports.createDoctor = async ({
   }
 };
 
-exports.getAllDoctors = async ({ name, practiceArea, page, pageSize }) => {
+const getAllDoctors = async ({ name, practiceArea, page, pageSize }) => {
   try {
     const { limit, offset } = getLimitAndOffset(page, pageSize);
     const practiceAreaFilters = {};
@@ -109,3 +109,5 @@ exports.getAllDoctors = async ({ name, practiceArea, page, pageSize }) => {
     throw new MedicaError("Unable to return doctors");
   }
 };
+
+module.exports = { createDoctor, getAllDoctors };

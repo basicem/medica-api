@@ -5,24 +5,20 @@ const PAGINATION = {
 };
 
 const getLimitAndOffset = (page, pageSize) => {
-  // Rename to defaultSize
-  let autoSize = PAGINATION.PAGE_SIZE;
-  const autoPage = PAGINATION.PAGE;
-  // maximim  size
+  let defaultSize = PAGINATION.PAGE_SIZE;
+  const autodefaulPage = PAGINATION.PAGE;
+
   if (pageSize > PAGINATION.MAX_PAGE_SIZE) {
-    autoSize = PAGINATION.MAX_PAGE_SIZE;
+    defaultSize = PAGINATION.MAX_PAGE_SIZE;
+  } else if (pageSize < PAGINATION.PAGE) {
+    defaultSize = PAGINATION.PAGE;
   }
-  // negative size
-  else if (pageSize < PAGINATION.PAGE) {
-    autoSize = PAGINATION.PAGE;
-  }
-  const limit = pageSize ? +pageSize : autoSize;
-  const offset = page ? (page - 1) * limit : autoPage;
+  const limit = pageSize ? +pageSize : defaultSize;
+  const offset = page ? (page - 1) * limit : autodefaulPage;
   return { limit, offset };
 };
 
 const paginate = ({ count, rows, page, pageSize }) => {
-  // const { limit } = getLimitAndOffset(page, pageSize);
   const totalPages = Math.ceil(count / +pageSize);
   const nextPage = totalPages > +page ? +page + 1 : null;
   const previousPage = +page === 1 ? null : +page - 1;

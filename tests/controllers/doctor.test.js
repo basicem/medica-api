@@ -13,12 +13,11 @@ describe("POST doctors", async () => {
     await db.PracticeArea.destroy({ truncate: { cascade: true } });
     await db.Doctor.destroy({ truncate: { cascade: true } });
   });
+
   it("Create doctor", async () => {
     // arrange
     const pa = await db.PracticeArea.create({
       name: "Surgeon",
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
     const requestData = {
       image: "https://upload.wikimedia.org",
@@ -49,12 +48,11 @@ describe("POST doctors", async () => {
     expect(status).to.equal(201);
     expect(body.id).to.not.be.null;
   });
+
   it("Create doctor with existing email", async () => {
     // arrange
     const practiceArea = await db.PracticeArea.create({
       name: "Family medicine",
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
     const workingHours = [
       { day: "monday", workTimeStart: "08:00", workTimeEnd: "18:00" },

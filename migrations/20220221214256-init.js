@@ -197,8 +197,6 @@ module.exports = {
       doctor_id: {
         type: Sequelize.INTEGER,
 
-        // allowNull: false,
-
         references: {
           model: "doctor",
           key: "id",
