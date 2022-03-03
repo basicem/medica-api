@@ -38,8 +38,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      adress: {
-        field: "adress",
+      address: {
+        field: "address",
         type: DataTypes.STRING,
       },
 

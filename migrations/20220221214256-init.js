@@ -35,7 +35,7 @@ module.exports = {
         allowNull: false,
       },
 
-      adress: {
+      address: {
         type: Sequelize.STRING,
 
         allowNull: false,
@@ -196,8 +196,6 @@ module.exports = {
 
       doctor_id: {
         type: Sequelize.INTEGER,
-
-        // allowNull: false,
 
         references: {
           model: "doctor",

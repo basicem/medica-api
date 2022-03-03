@@ -1,13 +1,16 @@
+const { Op } = require("sequelize");
+
 const { MedicaError } = require("../exceptions");
 const db = require("../models");
+const { paginate, getLimitAndOffset } = require("../helpers/pagination");
 
-exports.createDoctor = async ({
+const createDoctor = async ({
   image,
   title,
   firstName,
   lastName,
   practiceArea,
-  adress,
+  address,
   city,
   zip,
   country,
@@ -26,7 +29,7 @@ exports.createDoctor = async ({
       title,
       firstName,
       lastName,
-      adress,
+      address,
       city,
       zip,
       country,
@@ -55,3 +58,56 @@ exports.createDoctor = async ({
     throw new MedicaError("Unable to create doctor");
   }
 };
+
+const getAllDoctors = async ({ name, practiceArea, page, pageSize }) => {
+  try {
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+    const practiceAreaFilters = {};
+    const doctorFilters = {};
+    if (name) {
+      doctorFilters[Op.or] = [
+        { firstName: { [Op.iLike]: `%${name}` } },
+        { lastName: { [Op.iLike]: `%${name}` } },
+      ];
+    }
+    if (practiceArea) {
+      practiceAreaFilters.practiceAreaId = practiceArea;
+    }
+
+    const { rows, count } = await db.Doctor.findAndCountAll({
+      limit,
+      offset,
+      where: doctorFilters,
+      include: [
+        {
+          model: db.DoctorPracticeArea,
+          include: [
+            {
+              model: db.PracticeArea,
+              attributes: ["id", "name"],
+            },
+          ],
+          where: practiceAreaFilters,
+          attributes: ["practiceAreaId"],
+        },
+        {
+          model: db.WorkingHours,
+          attributes: ["day", "workTimeStart", "workTimeEnd"],
+        },
+      ],
+      attributes: ["id", "image", "firstName", "lastName"],
+    });
+
+    return paginate({
+      count,
+      rows,
+      page,
+      pageSize,
+    });
+  } catch (err) {
+    console.log(err);
+    throw new MedicaError("Unable to return doctors");
+  }
+};
+
+module.exports = { createDoctor, getAllDoctors };
