@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 
 const { MedicaError } = require("../exceptions");
 const db = require("../models");
-const { paginate, getLimitAndOffset } = require("../controllers/helpers");
+const { paginate, getLimitAndOffset } = require("../helpers/pagination");
 
 exports.createDoctor = async ({
   image,
