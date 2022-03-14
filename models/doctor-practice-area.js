@@ -4,8 +4,14 @@ module.exports = (sequelize, DataTypes) => {
   class DoctorPracticeArea extends Model {
     static associate(models) {
       // define association here
-      this.belongsTo(models.Doctor, { foreignKey: "doctor_id" });
-      this.belongsTo(models.PracticeArea, { foreignKey: "practice_area_id" });
+      this.belongsTo(models.Doctor, {
+        as: "doctorPracticeArea",
+        foreignKey: "doctor_id",
+      });
+      this.belongsTo(models.PracticeArea, {
+        as: "practiceArea",
+        foreignKey: "practice_area_id",
+      });
     }
   }
 

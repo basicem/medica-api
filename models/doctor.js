@@ -4,8 +4,14 @@ module.exports = (sequelize, DataTypes) => {
   class Doctor extends Model {
     static associate(models) {
       // define association here
-      this.hasMany(models.WorkingHours, { foreignKey: "doctor_id" });
-      this.hasMany(models.DoctorPracticeArea, { foreignKey: "doctor_id" });
+      this.hasMany(models.WorkingHours, {
+        as: "workingHours",
+        foreignKey: "doctor_id",
+      });
+      this.hasMany(models.DoctorPracticeArea, {
+        as: "doctorPracticeArea",
+        foreignKey: "doctor_id",
+      });
     }
   }
 

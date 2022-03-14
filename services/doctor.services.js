@@ -81,9 +81,11 @@ const getAllDoctors = async ({ name, practiceArea, page, pageSize }) => {
       include: [
         {
           model: db.DoctorPracticeArea,
+          as: "doctorPracticeArea",
           include: [
             {
               model: db.PracticeArea,
+              as: "practiceArea",
               attributes: ["id", "name"],
             },
           ],
@@ -92,15 +94,30 @@ const getAllDoctors = async ({ name, practiceArea, page, pageSize }) => {
         },
         {
           model: db.WorkingHours,
+          as: "workingHours",
           attributes: ["day", "workTimeStart", "workTimeEnd"],
         },
       ],
-      attributes: ["id", "image", "firstName", "lastName"],
+      attributes: ["id", "title", "image", "firstName", "lastName"],
     });
 
     return paginate({
       count,
-      rows,
+      rows: rows.map((d) => ({
+        id: d.id,
+        title: d.title,
+        image: d.image,
+        firstName: d.firstName,
+        lastName: d.lastName,
+        practiceAreas: d.doctorPracticeArea.map((pa) => ({
+          name: pa.practiceArea.name,
+        })),
+        workingHours: d.workingHours.map((wh) => ({
+          day: wh.day,
+          workTimeStart: wh.workTimeStart,
+          workTimeEnd: wh.workTimeEnd,
+        })),
+      })),
       page,
       pageSize,
     });
