@@ -35,7 +35,6 @@ const createPatient = async ({
 
 const getAllPatients = async ({ search, page, pageSize }) => {
   try {
-    // console.log("Ovo je", search);
     const { limit, offset } = getLimitAndOffset(page, pageSize);
     const patientFilters = {};
     if (search) {
@@ -68,7 +67,6 @@ const getAllPatients = async ({ search, page, pageSize }) => {
       pageSize,
     });
   } catch (err) {
-    console.log(err);
     throw new MedicaError("Unable to return patients");
   }
 };

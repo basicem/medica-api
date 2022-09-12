@@ -9,7 +9,6 @@ const get = async (req, res) => {
     if (err instanceof MedicaError) {
       return res.status(400).json({ error: err.message });
     }
-    // console.log(err);
     return res.status(500).json({ error: "Something went wrong" });
   }
 };
