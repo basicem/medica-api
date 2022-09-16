@@ -49,7 +49,10 @@ const getAllPatients = async ({ search, page, pageSize }) => {
       limit,
       offset,
       where: patientFilters,
-      attributes: ["id", "image", "firstName", "lastName", "email", "phoneNumber", "address"],
+      order: [
+        ["createdAt", "DESC"],
+      ],
+      attributes: ["id", "image", "firstName", "lastName", "email", "phoneNumber", "address", "createdAt", "updatedAt"],
     });
 
     return paginate({
@@ -61,7 +64,9 @@ const getAllPatients = async ({ search, page, pageSize }) => {
         lastName: p.lastName,
         email: p.email,
         phoneNumber: p.phoneNumber,
-        address: p.address
+        address: p.address,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt
       })),
       page,
       pageSize,
