@@ -1,21 +1,19 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Doctor extends Model {
-    static associate(models) {
-      this.hasMany(models.WorkingHours, {
-        as: "workingHours",
-        foreignKey: "doctor_id",
-      });
-      this.hasMany(models.DoctorPracticeArea, {
-        as: "doctorPracticeArea",
-        foreignKey: "doctor_id",
-      });
-    }
+  class Patient extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    // static associate(models) {
+    //   // define association here
+    // }
   }
-
-  Doctor.init(
+  Patient.init(
     {
+
       id: {
         field: "id",
         primaryKey: true,
@@ -25,11 +23,6 @@ module.exports = (sequelize, DataTypes) => {
 
       image: {
         field: "image",
-        type: DataTypes.STRING,
-      },
-
-      title: {
-        field: "title",
         type: DataTypes.STRING,
       },
 
@@ -53,23 +46,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      zip: {
-        field: "zip",
-        type: DataTypes.STRING,
-      },
-
-      country: {
-        field: "country",
-        type: DataTypes.STRING,
-      },
-
       phoneNumber: {
         field: "phone_number",
-        type: DataTypes.STRING,
-      },
-
-      website: {
-        field: "website",
         type: DataTypes.STRING,
       },
 
@@ -91,11 +69,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
 
-      tableName: "doctor",
-
-      modelName: "Doctor",
+      modelName: "Patient",
     }
   );
 
-  return Doctor;
+  return Patient;
 };

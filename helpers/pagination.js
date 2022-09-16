@@ -18,7 +18,9 @@ const getLimitAndOffset = (page, pageSize) => {
   return { limit, offset };
 };
 
-const paginate = ({ count, rows, page, pageSize }) => {
+const paginate = ({
+  count, rows, page, pageSize
+}) => {
   const totalPages = Math.ceil(count / +pageSize);
   const nextPage = totalPages > +page ? +page + 1 : null;
   const previousPage = +page === 1 ? null : +page - 1;
