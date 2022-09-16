@@ -21,7 +21,7 @@ const post = async (req, res) => {
     return res.status(201).json({ id: patient.id });
   } catch (err) {
     if (err.isJoi) {
-      return res.status(401).json({ error: err.details });
+      return res.status(400).json({ error: err.details });
     }
     if (err instanceof MedicaError) {
       return res.status(400).json({ error: err.message });
