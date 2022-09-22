@@ -8,7 +8,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       image: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING.BINARY,
         allowNull: false,
       },
       first_name: {
