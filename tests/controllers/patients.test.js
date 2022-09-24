@@ -69,12 +69,11 @@ describe("POST patients", async () => {
     };
     // act
     const response1 = await request(app).post("/api/patients").send(patient1);
-    const response2 = await request(app).get("/api/patients");
+    const countPatients = await db.Patient.count();
 
     // assert
     expect(response1.status).to.equal(201);
-    expect(response2.status).to.equal(200);
-    expect(response2.body.rows).to.have.lengthOf(1);
+    expect(countPatients).to.equal(1);
   });
 
   it("Post patient with same email", async () => {
@@ -92,13 +91,13 @@ describe("POST patients", async () => {
     // act
     const response1 = await request(app).post("/api/patients").send(patient1);
     const response2 = await request(app).post("/api/patients").send(patient1);
-    const response3 = await request(app).get("/api/patients");
+    const countPatients = await db.Patient.count();
 
     // assert
     expect(response1.status).to.equal(201);
     expect(response2.status).to.equal(400);
     expect(response2.body.error).to.equal("Patient with this email already exists");
-    expect(response3.body.rows).to.have.lengthOf(1);
+    expect(countPatients).to.equal(1);
   });
 
   it("Post two different patients", async () => {
@@ -126,11 +125,11 @@ describe("POST patients", async () => {
     // act
     const response1 = await request(app).post("/api/patients").send(patient1);
     const response2 = await request(app).post("/api/patients").send(patient2);
-    const response3 = await request(app).get("/api/patients");
+    const countPatients = await db.Patient.count();
 
     // assert
     expect(response1.status).to.equal(201);
     expect(response2.status).to.equal(201);
-    expect(response3.body.rows).to.have.lengthOf(2);
+    expect(countPatients).to.equal(2);
   });
 });
