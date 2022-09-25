@@ -8,6 +8,7 @@ const createPatient = async ({
   image,
   firstName,
   lastName,
+  dateOfBirth,
   address,
   city,
   phoneNumber,
@@ -22,6 +23,7 @@ const createPatient = async ({
       image,
       firstName,
       lastName,
+      dateOfBirth,
       address,
       city,
       phoneNumber,
@@ -49,7 +51,10 @@ const getAllPatients = async ({ search, page, pageSize }) => {
       limit,
       offset,
       where: patientFilters,
-      attributes: ["id", "image", "firstName", "lastName", "email", "phoneNumber", "address"],
+      order: [
+        ["createdAt", "DESC"],
+      ],
+      attributes: ["id", "image", "firstName", "lastName", "dateOfBirth", "email", "phoneNumber", "address", "createdAt", "updatedAt"],
     });
 
     return paginate({
@@ -59,9 +64,12 @@ const getAllPatients = async ({ search, page, pageSize }) => {
         image: p.image,
         firstName: p.firstName,
         lastName: p.lastName,
+        dateOfBirth: p.dateOfBirth,
         email: p.email,
         phoneNumber: p.phoneNumber,
-        address: p.address
+        address: p.address,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt
       })),
       page,
       pageSize,

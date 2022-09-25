@@ -7,7 +7,7 @@ const cors = require("cors");
 
 app.use(cors());
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "5mb" }));
 
 app.use(require("./routes"));
 

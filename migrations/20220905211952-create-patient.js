@@ -8,7 +8,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       image: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING.BINARY,
         allowNull: false,
       },
       first_name: {
@@ -18,6 +18,10 @@ module.exports = {
       last_name: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      date_of_birth: {
+        allowNull: false,
+        type: Sequelize.DATE
       },
       address: {
         type: Sequelize.STRING,
