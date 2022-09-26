@@ -54,7 +54,7 @@ const getAllPatients = async ({ search, page, pageSize }) => {
       order: [
         ["createdAt", "DESC"],
       ],
-      attributes: ["id", "image", "firstName", "lastName", "dateOfBirth", "email", "phoneNumber", "address", "createdAt", "updatedAt"],
+      attributes: ["id", "image", "firstName", "lastName", "dateOfBirth", "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
     });
 
     return paginate({
@@ -68,6 +68,7 @@ const getAllPatients = async ({ search, page, pageSize }) => {
         email: p.email,
         phoneNumber: p.phoneNumber,
         address: p.address,
+        city: p.city,
         createdAt: p.createdAt,
         updatedAt: p.updatedAt
       })),
