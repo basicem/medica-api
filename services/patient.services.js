@@ -46,8 +46,8 @@ const editPatient = async ({
   phoneNumber,
   email
 }) => {
-  if ((await db.Patient.findOne({ where: { email } })) === null) {
-    throw new MedicaError("Patient with this email does not exists");
+  if ((await db.Patient.findOne({ where: { slug } })) === null) {
+    throw new MedicaError("Patient does not exists");
   }
 
   try {
