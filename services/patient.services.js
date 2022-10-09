@@ -1,4 +1,4 @@
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 
 const { MedicaError } = require("../exceptions");
 const db = require("../models");
@@ -36,7 +36,7 @@ const createPatient = async ({
 };
 
 const editPatient = async ({
-  slug,
+  id,
   image,
   firstName,
   lastName,
@@ -46,7 +46,7 @@ const editPatient = async ({
   phoneNumber,
   email
 }) => {
-  if ((await db.Patient.findOne({ where: { slug } })) === null) {
+  if ((await db.Patient.findOne({ where: { id } })) === null) {
     throw new MedicaError("Patient does not exists");
   }
 
@@ -62,11 +62,10 @@ const editPatient = async ({
         phoneNumber,
         email
       },
-      { where: { slug } }
+      { where: { id } }
     );
     return patient;
   } catch (err) {
-    console.log("Error je: ", err);
     throw new MedicaError("Unable to update patient.");
   }
 };
@@ -117,24 +116,28 @@ const getAllPatients = async ({ search, page, pageSize }) => {
   }
 };
 
-const getPatient = async ({ slug }) => {
+const getPatient = async ({ id }) => {
   try {
     const patient = await db.Patient.findOne({
-      where: { slug },
+      where: { id },
       attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
         "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
     });
+    if (patient === null) throw new MedicaError();
+    // or return {message: "Patient does not exist!"} ??
     return patient;
   } catch (err) {
     throw new MedicaError("Unable to return patient");
   }
 };
 
-const deletePatient = async ({ slug }) => {
+const deletePatient = async ({ id }) => {
   try {
     const num = await db.Patient.destroy({
-      where: { slug }
+      where: { id }
     });
+    // if num === 1 then patient is deleted
+    // should i return object with message ?
     return num;
   } catch (err) {
     throw new MedicaError("Unable to delete patient");

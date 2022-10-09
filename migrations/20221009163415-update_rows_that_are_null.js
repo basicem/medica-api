@@ -6,14 +6,15 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
+    await queryInterface.sequelize.query("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
     await queryInterface.addColumn(
       "Patients",
       "slug",
       {
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        allowNull: true,
+        defaultValue: Sequelize.literal("uuid_generate_v4()"),
         unique: true,
+        allowNull: false,
       }
     );
   },

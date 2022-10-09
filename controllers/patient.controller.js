@@ -1,8 +1,8 @@
 const patientServices = require("../services/patient.services");
 const { patientSchema } = require("../schemas/patient");
-const { resolveError } = require("../helpers/pagination");
+const { resolveError } = require("../helpers/controllers");
 
-const get = async (req, res) => {
+const list = async (req, res) => {
   try {
     const patients = await patientServices.getAllPatients(req.query);
     return res.status(200).json(patients);
@@ -11,17 +11,17 @@ const get = async (req, res) => {
   }
 };
 
-const getPatient = async (req, res) => {
+const retrieve = async (req, res) => {
   try {
-    const patient = await patientServices.getPatient(req.params);
+    const { id } = req.params;
+    const patient = await patientServices.getPatient({ id });
     return res.status(200).json(patient);
   } catch (err) {
-    console.log(err);
     return resolveError(err, res);
   }
 };
 
-const post = async (req, res) => {
+const create = async (req, res) => {
   try {
     const value = await patientSchema.validateAsync(req.body);
     const patient = await patientServices.createPatient(value);
@@ -31,19 +31,21 @@ const post = async (req, res) => {
   }
 };
 
-const put = async (req, res) => {
+const update = async (req, res) => {
   try {
-    // const value = await patientSchema.validateAsync(req.body);
-    const patient = await patientServices.editPatient(req.body);
-    return res.status(201).json({ id: patient.id });
+    const { data } = req.params;
+    const value = await patientSchema.validateAsync(data);
+    const patient = await patientServices.editPatient(value);
+    return res.status(200).json({ id: patient.id });
   } catch (err) {
     return resolveError(err, res);
   }
 };
 
-const deletePatient = async (req, res) => {
+const remove = async (req, res) => {
   try {
-    const num = await patientServices.deletePatient(req.params);
+    const { id } = req.params;
+    const num = await patientServices.deletePatient({ id });
     return res.status(200).json({ num });
   } catch (err) {
     return resolveError(err, res);
@@ -51,5 +53,5 @@ const deletePatient = async (req, res) => {
 };
 
 module.exports = {
-  post, get, getPatient, deletePatient, put
+  create, list, retrieve, remove, update
 };

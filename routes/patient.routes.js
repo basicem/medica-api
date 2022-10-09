@@ -1,14 +1,14 @@
 const router = require("express").Router();
 const patient = require("../controllers/patient.controller");
 
-router.get("/", patient.get);
+router.get("/", patient.list);
 
-router.get("/:slug", patient.getPatient);
+router.get("/:id", patient.retrieve);
 
-router.post("/", patient.post);
+router.post("/", patient.create);
 
-router.put("/", patient.put);
+router.put("/:id", patient.update);
 
-router.delete("/:slug", patient.deletePatient);
+router.delete("/:id", patient.remove);
 
 module.exports = router;
