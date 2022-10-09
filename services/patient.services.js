@@ -63,7 +63,6 @@ const editPatient = async ({
       phoneNumber,
       email
     });
-    await patient.save();
     return await patient.save();
   } catch (err) {
     throw new MedicaError("Unable to update patient.");
