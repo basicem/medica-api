@@ -49,22 +49,22 @@ const editPatient = async ({
   if ((await db.Patient.findOne({ where: { id } })) === null) {
     throw new MedicaError("Patient does not exists");
   }
-
   try {
-    const patient = await db.Patient.update(
-      {
-        image,
-        firstName,
-        lastName,
-        dateOfBirth,
-        address,
-        city,
-        phoneNumber,
-        email
-      },
+    const patient = await db.Patient.findOne(
       { where: { id } }
     );
-    return patient;
+    patient.set({
+      image,
+      firstName,
+      lastName,
+      dateOfBirth,
+      address,
+      city,
+      phoneNumber,
+      email
+    });
+    await patient.save();
+    return await patient.save();
   } catch (err) {
     throw new MedicaError("Unable to update patient.");
   }

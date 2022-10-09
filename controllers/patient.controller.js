@@ -33,9 +33,9 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const { data } = req.params;
-    const value = await patientSchema.validateAsync(data);
-    const patient = await patientServices.editPatient(value);
+    const value = await patientSchema.validateAsync(req.body);
+    const { id } = req.params;
+    const patient = await patientServices.editPatient({ id, ...value });
     return res.status(200).json({ id: patient.id });
   } catch (err) {
     return resolveError(err, res);
