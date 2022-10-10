@@ -13,8 +13,8 @@ const list = async (req, res) => {
 
 const retrieve = async (req, res) => {
   try {
-    const { id } = req.params;
-    const patient = await patientServices.getPatient({ id });
+    const { slug } = req.params;
+    const patient = await patientServices.getPatient(slug);
     return res.status(200).json(patient);
   } catch (err) {
     return resolveError(err, res);
@@ -33,9 +33,9 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const value = await patientSchema.validateAsync(req.body);
+    const data = await patientSchema.validateAsync(req.body);
     const { id } = req.params;
-    const patient = await patientServices.editPatient({ id, ...value });
+    const patient = await patientServices.editPatient(id, data);
     return res.status(200).json({ id: patient.id });
   } catch (err) {
     return resolveError(err, res);
@@ -45,8 +45,8 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    const num = await patientServices.deletePatient({ id });
-    return res.status(200).json({ num });
+    await patientServices.deletePatient(id);
+    return res.status(204).send();
   } catch (err) {
     return resolveError(err, res);
   }

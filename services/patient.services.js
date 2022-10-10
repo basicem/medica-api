@@ -35,34 +35,15 @@ const createPatient = async ({
   }
 };
 
-const editPatient = async ({
-  id,
-  image,
-  firstName,
-  lastName,
-  dateOfBirth,
-  address,
-  city,
-  phoneNumber,
-  email
-}) => {
-  if ((await db.Patient.findOne({ where: { id } })) === null) {
-    throw new MedicaError("Patient does not exists");
-  }
+const editPatient = async (id, data) => {
   try {
     const patient = await db.Patient.findOne(
       { where: { id } }
     );
-    patient.set({
-      image,
-      firstName,
-      lastName,
-      dateOfBirth,
-      address,
-      city,
-      phoneNumber,
-      email
-    });
+    if (patient === null) {
+      throw new MedicaError();
+    }
+    patient.set(data);
     return await patient.save();
   } catch (err) {
     throw new MedicaError("Unable to update patient.");
@@ -115,29 +96,25 @@ const getAllPatients = async ({ search, page, pageSize }) => {
   }
 };
 
-const getPatient = async ({ id }) => {
+const getPatient = async (slug) => {
   try {
     const patient = await db.Patient.findOne({
-      where: { id },
+      where: { slug },
       attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
         "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
     });
     if (patient === null) throw new MedicaError();
-    // or return {message: "Patient does not exist!"} ??
     return patient;
   } catch (err) {
     throw new MedicaError("Unable to return patient");
   }
 };
 
-const deletePatient = async ({ id }) => {
+const deletePatient = async (id) => {
   try {
-    const num = await db.Patient.destroy({
+    return await db.Patient.destroy({
       where: { id }
     });
-    // if num === 1 then patient is deleted
-    // should i return object with message ?
-    return num;
   } catch (err) {
     throw new MedicaError("Unable to delete patient");
   }

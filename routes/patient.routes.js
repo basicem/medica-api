@@ -3,7 +3,7 @@ const patient = require("../controllers/patient.controller");
 
 router.get("/", patient.list);
 
-router.get("/:id", patient.retrieve);
+router.get("/:slug", patient.retrieve);
 
 router.post("/", patient.create);
 
