@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 
-const { MedicaError } = require("../exceptions");
+const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 const { paginate, getLimitAndOffset } = require("../helpers/pagination");
 
@@ -35,6 +35,23 @@ const createPatient = async ({
   }
 };
 
+const editPatient = async (id, data) => {
+  const patient = await db.Patient.findOne(
+    { where: { id } }
+  );
+
+  if (patient === null) {
+    throw new NotFound("Patient not found.");
+  }
+
+  try {
+    patient.set(data);
+    return await patient.save();
+  } catch (err) {
+    throw new MedicaError("Unable to update patient.");
+  }
+};
+
 const getAllPatients = async ({ search, page, pageSize }) => {
   try {
     const { limit, offset } = getLimitAndOffset(page, pageSize);
@@ -54,13 +71,14 @@ const getAllPatients = async ({ search, page, pageSize }) => {
       order: [
         ["createdAt", "DESC"],
       ],
-      attributes: ["id", "image", "firstName", "lastName", "dateOfBirth", "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
+      attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth", "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
     });
 
     return paginate({
       count,
       rows: rows.map((p) => ({
         id: p.id,
+        slug: p.slug,
         image: p.image,
         firstName: p.firstName,
         lastName: p.lastName,
@@ -80,4 +98,28 @@ const getAllPatients = async ({ search, page, pageSize }) => {
   }
 };
 
-module.exports = { createPatient, getAllPatients };
+const getPatient = async (slug) => {
+  const patient = await db.Patient.findOne({
+    where: { slug },
+    attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
+      "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
+  });
+
+  if (patient === null) throw new NotFound("Patient not found.");
+
+  return patient;
+};
+
+const deletePatient = async (id) => {
+  try {
+    return await db.Patient.destroy({
+      where: { id }
+    });
+  } catch (err) {
+    throw new MedicaError("Unable to delete patient");
+  }
+};
+
+module.exports = {
+  createPatient, getAllPatients, getPatient, deletePatient, editPatient
+};

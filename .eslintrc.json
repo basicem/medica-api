@@ -11,6 +11,10 @@
   "rules": {
     "linebreak-style": 0,
     "quotes": ["error", "double"],
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "max-classes-per-file": [
+      "error",
+      { "ignoreExpressions": true, "max": 2 }
+    ]
   }
 }
