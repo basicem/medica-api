@@ -1,3 +1,5 @@
 class MedicaError extends Error {}
 
-module.exports = { MedicaError };
+class NotFound extends MedicaError {}
+
+module.exports = { MedicaError, NotFound };

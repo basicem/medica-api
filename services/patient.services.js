@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 
-const { MedicaError } = require("../exceptions");
+const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 const { paginate, getLimitAndOffset } = require("../helpers/pagination");
 
@@ -36,13 +36,15 @@ const createPatient = async ({
 };
 
 const editPatient = async (id, data) => {
+  const patient = await db.Patient.findOne(
+    { where: { id } }
+  );
+
+  if (patient === null) {
+    throw new NotFound("Patient not found.");
+  }
+
   try {
-    const patient = await db.Patient.findOne(
-      { where: { id } }
-    );
-    if (patient === null) {
-      throw new MedicaError();
-    }
     patient.set(data);
     return await patient.save();
   } catch (err) {
@@ -97,17 +99,15 @@ const getAllPatients = async ({ search, page, pageSize }) => {
 };
 
 const getPatient = async (slug) => {
-  try {
-    const patient = await db.Patient.findOne({
-      where: { slug },
-      attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
-        "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
-    });
-    if (patient === null) throw new MedicaError();
-    return patient;
-  } catch (err) {
-    throw new MedicaError("Unable to return patient");
-  }
+  const patient = await db.Patient.findOne({
+    where: { slug },
+    attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
+      "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
+  });
+
+  if (patient === null) throw new NotFound("Patient not found.");
+
+  return patient;
 };
 
 const deletePatient = async (id) => {
