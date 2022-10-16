@@ -23,7 +23,7 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const data = await userSchema.validateAsync(req.body);
+    const data = req.body;
     const { id } = req.params;
     const user = await userServices.update(id, data);
     return res.status(200).json({ id: user.id });

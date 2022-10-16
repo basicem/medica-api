@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 const { paginate, getLimitAndOffset } = require("../helpers/pagination");
@@ -48,13 +50,36 @@ const update = async (id, data) => {
   }
 };
 
-const list = async ({ page, pageSize }) => {
+const list = async ({
+  search, role, active, verified, page, pageSize
+}) => {
   try {
     const { limit, offset } = getLimitAndOffset(page, pageSize);
+    const isActive = (active === "true");
+    const isVerified = (verified === "true");
+    const userFilters = {};
+
+    if (search) {
+      userFilters[Op.or] = [
+        { firstName: { [Op.iLike]: `%${search}` } },
+        { lastName: { [Op.iLike]: `%${search}` } },
+        { email: { [Op.iLike]: `%${search}` } },
+      ];
+    }
+    if (role) {
+      userFilters.role = { [Op.iLike]: `%${role}` };
+    }
+    if (active) {
+      userFilters.isActive = { [Op.is]: isActive };
+    }
+    if (verified) {
+      userFilters.isVerified = { [Op.is]: isVerified };
+    }
 
     const { rows, count } = await db.User.findAndCountAll({
       limit,
       offset,
+      where: userFilters,
       order: [
         ["createdAt", "DESC"],
       ],
