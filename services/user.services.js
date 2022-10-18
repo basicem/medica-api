@@ -1,8 +1,20 @@
 const { Op } = require("sequelize");
+const bcrypt = require("bcrypt");
 
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 const { paginate, getLimitAndOffset } = require("../helpers/pagination");
+const sendEmail = require("../helpers/email");
+
+const sendUserCreateEmail = async (user, rawPassword) => {
+  const to = user.email;
+  const from = process.env.NO_REPLY_EMAIL;
+  const subject = "[WELCOME TO MEDICA]";
+  const text = `Hello, here is your password: ${rawPassword}`;
+  const html = `<p>Hello, here is your password: ${rawPassword}</p>`;
+
+  await sendEmail(to, from, subject, text, html);
+};
 
 const create = async ({
   firstName,
@@ -18,15 +30,17 @@ const create = async ({
   }
 
   try {
+    const salt = await bcrypt.genSaltSync(10, "a");
     const user = await db.User.create({
       firstName,
       lastName,
       email,
       role,
-      password,
+      password: bcrypt.hashSync(password, salt),
       isVerified,
       isActive
     });
+    await sendUserCreateEmail(user, password);
     return user;
   } catch (err) {
     throw new MedicaError("Unable to create user.");
@@ -40,6 +54,11 @@ const update = async (id, data) => {
 
   if (user === null) {
     throw new NotFound("User not found.");
+  }
+
+  if (data.password) {
+    const salt = await bcrypt.genSaltSync(10, "a");
+    data = { ...data, password: bcrypt.hashSync(data.password, salt) };
   }
 
   try {

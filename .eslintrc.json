@@ -16,5 +16,5 @@
       "error",
       { "ignoreExpressions": true, "max": 2 }
     ]
-  }
+  },
 }

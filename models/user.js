@@ -1,5 +1,4 @@
 const { Model } = require("sequelize");
-const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -73,30 +72,16 @@ module.exports = (sequelize, DataTypes) => {
 
       modelName: "User",
 
-      hooks: {
-        beforeCreate: async (user) => {
-          if (user.password) {
-            const salt = await bcrypt.genSaltSync(10, "a");
-            user.password = bcrypt.hashSync(user.password, salt);
-          }
-        },
-        beforeUpdate: async (user) => {
-          if (user.password) {
-            const salt = await bcrypt.genSaltSync(10, "a");
-            user.password = bcrypt.hashSync(user.password, salt);
-          }
-        },
-      },
-      instanceMethods: {
-        validPassword: (password) => bcrypt.compareSync(password, this.password)
-      }
+      // instanceMethods: {
+      //   validPassword: (password) => bcrypt.compareSync(password, this.password)
+      // }
 
     }
   );
-  User.prototype.validPassword = async (password, hash) => {
-    const result = await bcrypt.compareSync(password, hash);
-    return result;
-  };
+  // User.prototype.validPassword = async (password, hash) => {
+  //   const result = await bcrypt.compareSync(password, hash);
+  //   return result;
+  // };
 
   return User;
 };
