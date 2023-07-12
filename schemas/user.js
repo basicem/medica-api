@@ -10,4 +10,10 @@ const userSchema = Joi.object({
   isActive: Joi.boolean().required(),
 });
 
-module.exports = { userSchema };
+const updateuserSchema = Joi.object({
+  role: Joi.string().valid("Admin", "Doctor").required(),
+  isActive: Joi.boolean().required(),
+  isVerified: Joi.boolean().required()
+});
+
+module.exports = { userSchema, updateuserSchema };

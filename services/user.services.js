@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 const { paginate, getLimitAndOffset } = require("../helpers/pagination");
-const sendEmail = require("../helpers/email");
+const { sendEmail } = require("../helpers/email");
 
 const sendUserCreateEmail = async (user, rawPassword) => {
   const to = user.email;
@@ -48,6 +48,7 @@ const create = async ({
 };
 
 const update = async (id, data) => {
+  // console.log("User is: ", id);
   const user = await db.User.findOne(
     { where: { id } }
   );
@@ -56,17 +57,32 @@ const update = async (id, data) => {
     throw new NotFound("User not found.");
   }
 
-  if (data.password) {
-    const salt = await bcrypt.genSaltSync(10, "a");
-    data = { ...data, password: bcrypt.hashSync(data.password, salt) };
-  }
-
   try {
     user.set(data);
     return await user.save();
   } catch (err) {
     throw new MedicaError("Unable to update user.");
   }
+};
+
+const get = async (identifier) => {
+  let user;
+
+  if (typeof identifier === "string") {
+    // Search by email
+    user = await db.User.findOne({ where: { email: identifier } });
+  } else if (typeof identifier === "number") {
+    // Search by id
+    user = await db.User.findOne({ where: { id: identifier } });
+  } else {
+    throw new Error("Invalid identifier type.");
+  }
+
+  if (user === null) {
+    throw new NotFound("User not found.");
+  }
+
+  return user;
 };
 
 const list = async ({
@@ -100,7 +116,9 @@ const list = async ({
       offset,
       where: userFilters,
       order: [
-        ["createdAt", "DESC"],
+        ["firstName"],
+        ["lastName"],
+        ["email"],
       ],
       attributes: ["id", "firstName", "lastName", "email", "role", "isVerified", "isActive", "createdAt", "updatedAt"],
     });
@@ -127,5 +145,5 @@ const list = async ({
 };
 
 module.exports = {
-  create, list, update
+  create, list, update, get
 };

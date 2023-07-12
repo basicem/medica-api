@@ -31,4 +31,4 @@ const emailBackendFactory = () => {
 
 const sendEmail = emailBackendFactory();
 
-module.exports = sendEmail;
+module.exports = { sendEmail };

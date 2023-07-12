@@ -1,5 +1,5 @@
 const userServices = require("../services/user.services");
-const { userSchema } = require("../schemas/user");
+const { userSchema, updateuserSchema } = require("../schemas/user");
 const { resolveError } = require("../helpers/controllers");
 
 const list = async (req, res) => {
@@ -23,9 +23,9 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const data = req.body;
+    const value = await updateuserSchema.validateAsync(req.body);
     const { id } = req.params;
-    const user = await userServices.update(id, data);
+    const user = await userServices.update(id, value);
     return res.status(200).json({ id: user.id });
   } catch (err) {
     return resolveError(err, res);
