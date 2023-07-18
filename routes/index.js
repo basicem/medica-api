@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const { verifyJWT } = require("../middleware/verifyJWT");
+const { verifyJWT } = require("../middleware/authorisation");
 
-router.use("/api", require("./auth.routes"));
+router.use("/api/auth", require("./auth.routes"));
 
 router.use("/api/health-check", require("./health-check.routes"));
 

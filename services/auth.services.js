@@ -3,8 +3,13 @@ const jwt = require("jsonwebtoken");
 
 const { MedicaError, NotFound } = require("../exceptions");
 
-const getToken = async (password, user) => {
+const authenticate = async (password, user) => {
   let accessToken = null;
+  // first check if user is active and verifies
+  if (user && (!user.isActive || !user.isVerified)) {
+    throw new MedicaError("User not found.");
+  }
+
   if (user && (await bcrypt.compare(password, user.password))) {
     // Create token
     accessToken = jwt.sign(
@@ -20,8 +25,9 @@ const getToken = async (password, user) => {
       }
     );
   }
+
   if (accessToken === null) {
-    throw new MedicaError("Unable to generate token");
+    throw new MedicaError("User not found");
   }
   return accessToken;
 };
@@ -36,5 +42,5 @@ const verifyToken = async (token) => {
 };
 
 module.exports = {
-  getToken, verifyToken
+  authenticate, verifyToken
 };

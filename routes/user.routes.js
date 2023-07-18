@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const user = require("../controllers/user.controller");
-const ROLES_LIST = require("../helpers/roles");
-const { verifyRoles } = require("../middleware/verifyJWT");
+const ROLES = require("../helpers/constants");
+const { verifyRoles } = require("../middleware/authorisation");
 
-router.get("/", verifyRoles(ROLES_LIST.Admin), user.list);
+router.get("/", verifyRoles(ROLES.ADMIN), user.list);
 
-router.post("/", verifyRoles(ROLES_LIST.Admin), user.create);
+router.post("/", verifyRoles(ROLES.ADMIN), user.create);
 
-router.put("/:id", verifyRoles(ROLES_LIST.Admin), user.update);
+router.put("/:id", verifyRoles(ROLES.ADMIN), user.update);
 
 module.exports = router;

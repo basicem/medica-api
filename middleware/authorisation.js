@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const ROLES = require("../helpers/constants");
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -12,20 +13,15 @@ const verifyJWT = (req, res, next) => {
     req.role = decoded.user.role;
     return next();
   } catch (err) {
-    // console.log(err);
     return res.sendStatus(403);
   }
 };
 
-const verifyRoles = (allowedRoles) => (req, res, next) => {
+const verifyRoles = (allowedRole) => (req, res, next) => {
   if (!req?.role) return res.sendStatus(401);
-  // porediti dvije jesul iste ako jesu ok ako nisu
-  // TODO
-  console.log(allowedRoles);
-  console.log(req.role);
-  const result = true;
-  if (!result) return res.sendStatus(401);
-  return next();
+  if (req.role === ROLES.ADMIN) return next();
+  if (allowedRole === req.role) return next();
+  return res.sendStatus(401);
 };
 
 module.exports = {

@@ -65,18 +65,18 @@ const update = async (id, data) => {
   }
 };
 
-const get = async (identifier) => {
-  let user;
+const getById = async (id) => {
+  const user = await db.User.findOne({ where: { id } });
 
-  if (typeof identifier === "string") {
-    // Search by email
-    user = await db.User.findOne({ where: { email: identifier } });
-  } else if (typeof identifier === "number") {
-    // Search by id
-    user = await db.User.findOne({ where: { id: identifier } });
-  } else {
-    throw new Error("Invalid identifier type.");
+  if (user === null) {
+    throw new NotFound("User not found.");
   }
+
+  return user;
+};
+
+const getByEmail = async (email) => {
+  const user = await db.User.findOne({ where: { email } });
 
   if (user === null) {
     throw new NotFound("User not found.");
@@ -145,5 +145,5 @@ const list = async ({
 };
 
 module.exports = {
-  create, list, update, get
+  create, list, update, getByEmail, getById
 };
