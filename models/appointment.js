@@ -1,7 +1,7 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class Appointment extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,13 +9,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasMany(models.Appointment, {
+      Appointment.belongsTo(models.User, {
         foreignKey: "doctor_id",
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
+      });
+      Appointment.belongsTo(models.Patient, {
+        foreignKey: "patient_id",
+        onDelete: "CASCADE",
       });
     }
   }
-  User.init(
+  Appointment.init(
     {
 
       id: {
@@ -24,41 +28,45 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         autoIncrement: true,
       },
+      slug: {
+        allowNull: false,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+      },
 
-      firstName: {
-        field: "first_name",
+      title: {
+        field: "title",
         type: DataTypes.STRING,
       },
 
-      lastName: {
-        field: "last_name",
+      description: {
+        field: "description",
         type: DataTypes.STRING,
       },
 
-      email: {
-        field: "email",
-        type: DataTypes.STRING,
-      },
-
-      role: {
-        field: "role",
-        type: DataTypes.ENUM,
-        values: ["Admin", "Doctor"]
-      },
-
-      password: {
-        field: "password",
-        type: DataTypes.STRING,
-      },
-
-      isVerified: {
-        field: "is_verified",
+      isVirtual: {
+        field: "is_virtual",
         type: DataTypes.BOOLEAN,
       },
 
-      isActive: {
-        field: "is_active",
+      link: {
+        field: "link",
+        type: DataTypes.STRING,
+      },
+
+      isConfirmed: {
+        field: "is_confirmed",
         type: DataTypes.BOOLEAN,
+      },
+
+      startDate: {
+        field: "start_date",
+        type: DataTypes.DATE
+      },
+
+      endDate: {
+        field: "end_date",
+        type: DataTypes.DATE
       },
 
       createdAt: {
@@ -74,18 +82,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
 
-      modelName: "User",
-
-      // instanceMethods: {
-      //   validPassword: (password) => bcrypt.compareSync(password, this.password)
-      // }
-
+      modelName: "Appointment",
     }
   );
-  // User.prototype.validPassword = async (password, hash) => {
-  //   const result = await bcrypt.compareSync(password, hash);
-  //   return result;
-  // };
 
-  return User;
+  return Appointment;
 };
