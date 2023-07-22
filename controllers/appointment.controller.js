@@ -14,13 +14,24 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    const appointments = await appointmentService.getAllApointments(req.query);
+    const { id } = req.params;
+    const appointments = await appointmentService.getAppointmentsByDoctorId(id);
     return res.status(200).json(appointments);
   } catch (err) {
     return resolveError(err, res);
   }
 };
 
+const retrieve = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const appointment = await appointmentService.getAppointment(slug);
+    return res.status(200).json(appointment);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
 module.exports = {
-  create, list
+  create, list, retrieve
 };

@@ -5,7 +5,9 @@ const { verifyRoles } = require("../middleware/authorisation");
 
 router.get("/", verifyRoles(ROLES.DOCTOR), patient.list);
 
-router.get("/:slug", verifyRoles(ROLES.DOCTOR), patient.retrieve);
+router.get("/:id", verifyRoles(ROLES.DOCTOR), patient.get);
+
+router.get("/slug/:slug", verifyRoles(ROLES.DOCTOR), patient.retrieve);
 
 router.post("/", verifyRoles(ROLES.DOCTOR), patient.create);
 

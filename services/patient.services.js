@@ -98,9 +98,21 @@ const getAllPatients = async ({ search, page, pageSize }) => {
   }
 };
 
-const getPatient = async (slug) => {
+const getPatientBySlug = async (slug) => {
   const patient = await db.Patient.findOne({
     where: { slug },
+    attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
+      "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
+  });
+
+  if (patient === null) throw new NotFound("Patient not found.");
+
+  return patient;
+};
+
+const getPatientById = async (id) => {
+  const patient = await db.Patient.findOne({
+    where: { id },
     attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
       "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
   });
@@ -121,5 +133,5 @@ const deletePatient = async (id) => {
 };
 
 module.exports = {
-  createPatient, getAllPatients, getPatient, deletePatient, editPatient
+  createPatient, getAllPatients, getPatientBySlug, deletePatient, editPatient, getPatientById
 };

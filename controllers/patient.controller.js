@@ -14,7 +14,17 @@ const list = async (req, res) => {
 const retrieve = async (req, res) => {
   try {
     const { slug } = req.params;
-    const patient = await patientServices.getPatient(slug);
+    const patient = await patientServices.getPatientBySlug(slug);
+    return res.status(200).json(patient);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const get = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const patient = await patientServices.getPatientById(id);
     return res.status(200).json(patient);
   } catch (err) {
     return resolveError(err, res);
@@ -53,5 +63,5 @@ const remove = async (req, res) => {
 };
 
 module.exports = {
-  create, list, retrieve, remove, update
+  create, get, list, retrieve, remove, update
 };
