@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 
@@ -45,7 +47,7 @@ const createAppointment = async ({
   }
 };
 
-const getAppointmentsByDoctorId = async (id) => {
+const getAppointmentsByDoctorId = async (id, start, end) => {
   try {
     const doctor = await db.User.findOne(
       { where: { id } }
@@ -56,9 +58,18 @@ const getAppointmentsByDoctorId = async (id) => {
     }
 
     const appointments = await db.Appointment.findAll(
-      { where: { doctor_id: doctor.id } }
+      {
+        where: {
+          doctor_id: doctor.id,
+          startDate: {
+            [Op.gte]: new Date(start),
+          },
+          endDate: {
+            [Op.lte]: new Date(end),
+          },
+        }
+      }
     );
-
     return appointments;
   } catch (err) {
     throw new MedicaError("Unable to create appointment.");

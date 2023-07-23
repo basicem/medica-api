@@ -14,8 +14,8 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    const { id } = req.params;
-    const appointments = await appointmentService.getAppointmentsByDoctorId(id);
+    const { id, start, end } = req.params;
+    const appointments = await appointmentService.getAppointmentsByDoctorId(id, start, end);
     return res.status(200).json(appointments);
   } catch (err) {
     return resolveError(err, res);
