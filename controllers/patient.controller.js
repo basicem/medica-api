@@ -11,6 +11,24 @@ const list = async (req, res) => {
   }
 };
 
+const search = async (req, res) => {
+  try {
+    const patients = await patientServices.searchPatients(req.query);
+    return res.status(200).json(patients);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const listByDoctor = async (req, res) => {
+  try {
+    const patients = await patientServices.getAllPatientsByDoctor(req.query);
+    return res.status(200).json(patients);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
 const retrieve = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -63,5 +81,5 @@ const remove = async (req, res) => {
 };
 
 module.exports = {
-  create, get, list, retrieve, remove, update
+  create, get, list, listByDoctor, retrieve, remove, update, search
 };

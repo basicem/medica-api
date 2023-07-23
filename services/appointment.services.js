@@ -47,7 +47,7 @@ const createAppointment = async ({
   }
 };
 
-const getAppointmentsByDoctorId = async (id, start, end) => {
+const getAppointmentsByDoctor = async (id, { start, end }) => {
   try {
     const doctor = await db.User.findOne(
       { where: { id } }
@@ -57,6 +57,8 @@ const getAppointmentsByDoctorId = async (id, start, end) => {
       throw new NotFound("Doctor not found.");
     }
 
+    console.log("Start: ", start);
+    console.log("End is: ", end);
     const appointments = await db.Appointment.findAll(
       {
         where: {
@@ -76,7 +78,7 @@ const getAppointmentsByDoctorId = async (id, start, end) => {
   }
 };
 
-const getAppointment = async (slug) => {
+const getAppointmentBySlug = async (slug) => {
   const appointment = await db.Appointment.findOne({
     where: { slug }
   });
@@ -86,6 +88,16 @@ const getAppointment = async (slug) => {
   return appointment;
 };
 
+const getAppointmentById = async (id) => {
+  const appointment = await db.Appointment.findOne({
+    where: { id }
+  });
+
+  if (appointment === null) throw new NotFound("Appointment not found.");
+
+  return appointment;
+};
+
 module.exports = {
-  createAppointment, getAppointmentsByDoctorId, getAppointment
+  createAppointment, getAppointmentsByDoctor, getAppointmentBySlug, getAppointmentById
 };

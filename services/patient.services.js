@@ -98,6 +98,23 @@ const getAllPatients = async ({ search, page, pageSize }) => {
   }
 };
 
+const searchPatients = async ({ search }) => {
+  try {
+    const patients = await db.Patient.findAll({
+      where: {
+        [Op.or]: [
+          { firstName: { [Op.iLike]: `${search}%` } },
+          { lastName: { [Op.iLike]: `${search}%` } },
+        ],
+      },
+      attributes: ["id", "firstName", "lastName", "email"],
+    });
+    return patients;
+  } catch (err) {
+    throw new MedicaError("Unable to return patients");
+  }
+};
+
 const getPatientBySlug = async (slug) => {
   const patient = await db.Patient.findOne({
     where: { slug },
@@ -133,5 +150,11 @@ const deletePatient = async (id) => {
 };
 
 module.exports = {
-  createPatient, getAllPatients, getPatientBySlug, deletePatient, editPatient, getPatientById
+  createPatient,
+  getAllPatients,
+  getPatientBySlug,
+  deletePatient,
+  editPatient,
+  getPatientById,
+  searchPatients
 };
