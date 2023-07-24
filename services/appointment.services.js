@@ -6,6 +6,7 @@ const db = require("../models");
 const createAppointment = async ({
   title,
   date,
+  time,
   duration,
   description,
   isVirtual,
@@ -27,8 +28,13 @@ const createAppointment = async ({
       throw new MedicaError("Unable to create appointment.");
     }
     // is this ok?
+    const [hours, minutes] = time.split(":");
+    const combinedDateTime = new Date(date);
+    combinedDateTime.setHours(parseInt(hours, 10));
+    combinedDateTime.setMinutes(parseInt(minutes, 10));
+
     const numericValue = parseFloat(duration.match(/\d+(\.\d+)?/)[0]);
-    const endDate = new Date(date.getTime() + numericValue * 60000);
+    const endDate = new Date(combinedDateTime.getTime() + numericValue * 60000);
 
     const appointment = await db.Appointment.create({
       title,
@@ -38,7 +44,7 @@ const createAppointment = async ({
       isConfirmed,
       doctor_id: doctorId,
       patient_id: patientId,
-      startDate: date,
+      startDate: combinedDateTime,
       endDate
     });
     return appointment;
@@ -57,8 +63,6 @@ const getAppointmentsByDoctor = async (id, { start, end }) => {
       throw new NotFound("Doctor not found.");
     }
 
-    console.log("Start: ", start);
-    console.log("End is: ", end);
     const appointments = await db.Appointment.findAll(
       {
         where: {

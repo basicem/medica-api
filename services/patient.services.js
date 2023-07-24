@@ -100,17 +100,39 @@ const getAllPatients = async ({ search, page, pageSize }) => {
 
 const searchPatients = async ({ search }) => {
   try {
-    const patients = await db.Patient.findAll({
+    const page = 0;
+    const pageSize = 30;
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+    const { rows, count } = await db.Patient.findAndCountAll({
+      limit,
+      offset,
       where: {
         [Op.or]: [
           { firstName: { [Op.iLike]: `${search}%` } },
           { lastName: { [Op.iLike]: `${search}%` } },
         ],
       },
-      attributes: ["id", "firstName", "lastName", "email"],
+      order: [
+        ["firstName", "ASC"],
+        ["lastName", "ASC"]
+      ],
+      attributes: ["id", "image", "firstName", "lastName", "email"],
     });
-    return patients;
+
+    return paginate({
+      count,
+      rows: rows.map((a) => ({
+        id: a.id,
+        image: a.image,
+        firstName: a.firstName,
+        lastName: a.lastName,
+        email: a.email,
+      })),
+      page,
+      pageSize,
+    });
   } catch (err) {
+    console.log("Error: ", err);
     throw new MedicaError("Unable to return patients");
   }
 };

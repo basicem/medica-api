@@ -7,7 +7,14 @@ const appointmentSchema = Joi.object({
   duration: Joi.string().required().pattern(/^(\d+\.?\d*) minutes$/),
   description: Joi.string().required(),
   isVirtual: Joi.boolean().required(),
-  link: Joi.string().allow(null),
+  link: Joi.string().when("isVirtual", {
+    is: true,
+    then: Joi.string().required().messages({ "any.required": "Meeting link is required" }),
+    otherwise: Joi.string().allow("").optional(),
+  }),
+  time: Joi.string().regex(/^\d{1,2}:\d{2}$/).messages({
+    "string.pattern.base": "Time format should be HH:MM",
+  }),
   isConfirmed: Joi.boolean(),
   doctorId: Joi.number().integer().required(),
   patientId: Joi.number().integer().required()

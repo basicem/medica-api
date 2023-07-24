@@ -5,7 +5,11 @@ const { resolveError } = require("../helpers/controllers");
 
 const create = async (req, res) => {
   try {
-    const value = await appointmentSchema.validateAsync(req.body);
+    const authorizationHeader = req.headers.authorization;
+    const token = authorizationHeader.split(" ")[1];
+    const { id } = await authService.verifyToken(token);
+    const data = { ...req.body, doctorId: id };
+    const value = await appointmentSchema.validateAsync(data);
     const appointment = await appointmentService.createAppointment(value);
     return res.status(201).json(appointment);
   } catch (err) {
