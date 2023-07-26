@@ -1,6 +1,7 @@
 const patientServices = require("../services/patient.services");
 const { patientSchema } = require("../schemas/patient");
 const { resolveError } = require("../helpers/controllers");
+const authService = require("../services/auth.services");
 
 const list = async (req, res) => {
   try {
@@ -51,7 +52,11 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const value = await patientSchema.validateAsync(req.body);
+    const authorizationHeader = req.headers.authorization;
+    const token = authorizationHeader.split(" ")[1];
+    const { id } = await authService.verifyToken(token);
+    const data = { ...req.body, doctorId: id };
+    const value = await patientSchema.validateAsync(data);
     const patient = await patientServices.createPatient(value);
     return res.status(201).json({ id: patient.id });
   } catch (err) {

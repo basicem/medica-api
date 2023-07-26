@@ -3,6 +3,8 @@ const { Op } = require("sequelize");
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 
+const { STATUS } = require("../helpers/constants");
+
 const createAppointment = async ({
   title,
   date,
@@ -11,7 +13,7 @@ const createAppointment = async ({
   description,
   isVirtual,
   link,
-  isConfirmed,
+  status,
   doctorId,
   patientId
 }) => {
@@ -27,7 +29,6 @@ const createAppointment = async ({
     if (!patient) {
       throw new MedicaError("Unable to create appointment.");
     }
-    // is this ok?
     const [hours, minutes] = time.split(":");
     const combinedDateTime = new Date(date);
     combinedDateTime.setHours(parseInt(hours, 10));
@@ -36,17 +37,19 @@ const createAppointment = async ({
     const numericValue = parseFloat(duration.match(/\d+(\.\d+)?/)[0]);
     const endDate = new Date(combinedDateTime.getTime() + numericValue * 60000);
 
-    const appointment = await db.Appointment.create({
-      title,
-      description,
-      isVirtual,
-      link,
-      isConfirmed,
-      doctor_id: doctorId,
-      patient_id: patientId,
-      startDate: combinedDateTime,
-      endDate
-    });
+    const appointment = await db.Appointment.create(
+      {
+        title,
+        description,
+        isVirtual,
+        link,
+        status,
+        doctor_id: doctorId,
+        patient_id: patientId,
+        startDate: combinedDateTime,
+        endDate
+      }
+    );
     return appointment;
   } catch (err) {
     throw new MedicaError("Unable to create appointment.");
@@ -78,13 +81,18 @@ const getAppointmentsByDoctor = async (id, { start, end }) => {
     );
     return appointments;
   } catch (err) {
-    throw new MedicaError("Unable to create appointment.");
+    throw new MedicaError("Unable to get appointment.");
   }
 };
 
 const getAppointmentBySlug = async (slug) => {
   const appointment = await db.Appointment.findOne({
-    where: { slug }
+    where: { slug },
+    include: [
+      { model: db.Patient, as: "patient" },
+      { model: db.User, as: "doctor" }
+    ],
+    attributes: ["id", "slug", "title", "description", "isVirtual", "link", "status", "startDate", "endDate"],
   });
 
   if (appointment === null) throw new NotFound("Appointment not found.");
@@ -94,7 +102,58 @@ const getAppointmentBySlug = async (slug) => {
 
 const getAppointmentById = async (id) => {
   const appointment = await db.Appointment.findOne({
-    where: { id }
+    where: { id },
+    include: [
+      { model: db.Patient, as: "patient" },
+      { model: db.User, as: "doctor" }
+    ],
+    attributes: ["id", "slug", "title", "description", "isVirtual", "link", "status", "startDate", "endDate"],
+  });
+
+  if (appointment === null) throw new NotFound("Appointment not found.");
+
+  return appointment;
+};
+
+const updateStatus = async (slug, data) => {
+  const appointment = await db.Appointment.findOne({
+    where: { slug }
+  });
+
+  if (appointment === null) throw new NotFound("Appointment not found.");
+
+  try {
+    appointment.set(data);
+    return await appointment.save();
+  } catch (err) {
+    throw new MedicaError("Unable to update appointment.");
+  }
+};
+
+const updateStatusPublic = async (slug, data) => {
+  const appointment = await db.Appointment.findOne({
+    where: { slug }
+  });
+
+  if (appointment === null) throw new NotFound("Appointment not found.");
+  if (appointment.status !== STATUS.PENDING) throw new NotFound("Unable to update appointment.");
+
+  try {
+    appointment.set(data);
+    return await appointment.save();
+  } catch (err) {
+    throw new MedicaError("Unable to update appointment.");
+  }
+};
+
+const getAppointmentPublic = async (slug) => {
+  const appointment = await db.Appointment.findOne({
+    where: { slug },
+    include: [
+      { model: db.Patient, as: "patient" },
+      { model: db.User, as: "doctor" }
+    ],
+    attributes: ["id", "slug", "title", "description", "isVirtual", "link", "status", "startDate", "endDate"],
   });
 
   if (appointment === null) throw new NotFound("Appointment not found.");
@@ -103,5 +162,11 @@ const getAppointmentById = async (id) => {
 };
 
 module.exports = {
-  createAppointment, getAppointmentsByDoctor, getAppointmentBySlug, getAppointmentById
+  createAppointment,
+  getAppointmentsByDoctor,
+  getAppointmentBySlug,
+  getAppointmentById,
+  updateStatus,
+  updateStatusPublic,
+  getAppointmentPublic,
 };

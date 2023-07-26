@@ -1,3 +1,4 @@
+const sendEmail = require("../helpers/email");
 const appointmentService = require("../services/appointment.services");
 const authService = require("../services/auth.services");
 const { appointmentSchema } = require("../schemas/appointment");
@@ -11,8 +12,22 @@ const create = async (req, res) => {
     const data = { ...req.body, doctorId: id };
     const value = await appointmentSchema.validateAsync(data);
     const appointment = await appointmentService.createAppointment(value);
+
+    // send the mail
+    const toEmail = process.env.RECIPIENT_EMAIL;
+    const subject = "Appointment Confirmation";
+    const d = {
+      title: "Appointment Confirmation!",
+      message: "Please confirm your appointment by clicking the button below:",
+      confirmationLink: `http://localhost:3000/appointments/patients/${appointment.slug}`,
+      note: "Please arrive 15 minutes before the scheduled appointment time.",
+    };
+
+    await sendEmail(toEmail, subject, d);
+
     return res.status(201).json(appointment);
   } catch (err) {
+    console.log("Error is: ", err);
     return resolveError(err, res);
   }
 };
@@ -49,6 +64,36 @@ const retrievebyId = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const appointment = await appointmentService.updateStatus(slug, req.body);
+    return res.status(200).json(appointment);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const updateStatusPublic = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const appointment = await appointmentService.updateStatusPublic(slug, req.body);
+    return res.status(200).json(appointment);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const detailsPublic = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const appointment = await appointmentService.getAppointmentPublic(slug);
+    return res.status(200).json(appointment);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
 module.exports = {
-  create, list, retrieveBySlug, retrievebyId
+  create, list, retrieveBySlug, retrievebyId, updateStatus, updateStatusPublic, detailsPublic
 };

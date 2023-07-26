@@ -12,10 +12,12 @@ module.exports = (sequelize, DataTypes) => {
       Appointment.belongsTo(models.User, {
         foreignKey: "doctor_id",
         onDelete: "CASCADE",
+        as: "doctor",
       });
       Appointment.belongsTo(models.Patient, {
         foreignKey: "patient_id",
         onDelete: "CASCADE",
+        as: "patient",
       });
     }
   }
@@ -54,9 +56,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      isConfirmed: {
-        field: "is_confirmed",
-        type: DataTypes.BOOLEAN,
+      status: {
+        field: "status",
+        type: DataTypes.ENUM,
+        values: ["Pending", "Canceled", "Confirmed"]
       },
 
       startDate: {
@@ -83,6 +86,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
 
       modelName: "Appointment",
+
     }
   );
 

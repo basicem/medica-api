@@ -11,11 +11,13 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Patient.hasMany(models.Appointment, {
         foreignKey: "patient_id",
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
+        as: "patient",
       });
       Patient.belongsTo(models.User, {
         foreignKey: "doctor_id",
         onDelete: "CASCADE",
+        as: "doctor",
       });
     }
   }

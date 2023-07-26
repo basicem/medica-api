@@ -18,7 +18,7 @@ const session = async (req, res) => {
     const authorizationHeader = req.headers.authorization;
     // Check if the Authorization header is present
     if (!authorizationHeader) {
-      return res.status(401);
+      return res.status(401).json("Unauthorized");
     }
     const token = authorizationHeader.split(" ")[1];
     const { id } = await authService.verifyToken(token);

@@ -12,7 +12,8 @@ const createPatient = async ({
   address,
   city,
   phoneNumber,
-  email
+  email,
+  doctorId
 }) => {
   if ((await db.Patient.findOne({ where: { email } })) !== null) {
     throw new MedicaError("Patient with this email already exists");
@@ -27,7 +28,8 @@ const createPatient = async ({
       address,
       city,
       phoneNumber,
-      email
+      email,
+      doctor_id: doctorId
     });
     return patient;
   } catch (err) {
@@ -132,7 +134,6 @@ const searchPatients = async ({ search }) => {
       pageSize,
     });
   } catch (err) {
-    console.log("Error: ", err);
     throw new MedicaError("Unable to return patients");
   }
 };
