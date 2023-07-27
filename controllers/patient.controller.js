@@ -5,7 +5,11 @@ const authService = require("../services/auth.services");
 
 const list = async (req, res) => {
   try {
-    const patients = await patientServices.getAllPatients(req.query);
+    const authorizationHeader = req.headers.authorization;
+    const token = authorizationHeader.split(" ")[1];
+    const { id } = await authService.verifyToken(token);
+    const data = { ...req.query, doctorId: id };
+    const patients = await patientServices.getAllPatients(data);
     return res.status(200).json(patients);
   } catch (err) {
     return resolveError(err, res);
@@ -14,7 +18,11 @@ const list = async (req, res) => {
 
 const search = async (req, res) => {
   try {
-    const patients = await patientServices.searchPatients(req.query);
+    const authorizationHeader = req.headers.authorization;
+    const token = authorizationHeader.split(" ")[1];
+    const { id } = await authService.verifyToken(token);
+    const data = { ...req.query, doctorId: id };
+    const patients = await patientServices.searchPatients(data);
     return res.status(200).json(patients);
   } catch (err) {
     return resolveError(err, res);

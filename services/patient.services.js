@@ -54,7 +54,9 @@ const editPatient = async (id, data) => {
   }
 };
 
-const getAllPatients = async ({ search, page, pageSize }) => {
+const getAllPatients = async ({
+  search, page, pageSize, doctorId
+}) => {
   try {
     const { limit, offset } = getLimitAndOffset(page, pageSize);
     const patientFilters = {};
@@ -65,6 +67,9 @@ const getAllPatients = async ({ search, page, pageSize }) => {
         { email: { [Op.iLike]: `%${search}` } },
       ];
     }
+    patientFilters[Op.and] = [
+      { doctor_id: { [Op.eq]: doctorId } },
+    ];
 
     const { rows, count } = await db.Patient.findAndCountAll({
       limit,
@@ -100,27 +105,34 @@ const getAllPatients = async ({ search, page, pageSize }) => {
   }
 };
 
-const searchPatients = async ({ search }) => {
+const searchPatients = async ({ search, doctorId }) => {
   try {
     const page = 0;
     const pageSize = 30;
     const { limit, offset } = getLimitAndOffset(page, pageSize);
+    console.log("Search je: ", search);
+    console.log("DoctorId je: ", doctorId);
     const { rows, count } = await db.Patient.findAndCountAll({
       limit,
       offset,
       where: {
-        [Op.or]: [
-          { firstName: { [Op.iLike]: `${search}%` } },
-          { lastName: { [Op.iLike]: `${search}%` } },
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { firstName: { [Op.iLike]: `${search}%` } },
+              { lastName: { [Op.iLike]: `${search}%` } },
+            ],
+          },
+          { doctor_id: { [Op.eq]: doctorId } },
         ],
       },
       order: [
         ["firstName", "ASC"],
         ["lastName", "ASC"]
       ],
-      attributes: ["id", "image", "firstName", "lastName", "email"],
+      attributes: ["id", "image", "firstName", "lastName", "email", "doctor_id"],
     });
-
+    console.log("Hi: ", rows);
     return paginate({
       count,
       rows: rows.map((a) => ({
