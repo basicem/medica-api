@@ -9,6 +9,7 @@ const login = async (req, res) => {
     const accessToken = await authService.authenticate(password, user.dataValues);
     return res.status(200).json(accessToken);
   } catch (err) {
+    console.log("Error is: ", err);
     return resolveError(err, res);
   }
 };

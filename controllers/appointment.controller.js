@@ -27,7 +27,6 @@ const create = async (req, res) => {
 
     return res.status(201).json(appointment);
   } catch (err) {
-    console.log("Error is: ", err);
     return resolveError(err, res);
   }
 };

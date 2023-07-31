@@ -9,7 +9,6 @@ const authenticate = async (password, user) => {
   if (user && (!user.isActive || !user.isVerified)) {
     throw new MedicaError("User not found.");
   }
-
   if (user && (await bcrypt.compare(password, user.password))) {
     // Create token
     accessToken = jwt.sign(

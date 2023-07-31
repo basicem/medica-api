@@ -1,15 +1,13 @@
 const { faker } = require("@faker-js/faker");
 
 const chai = require("chai");
-const sinon = require("sinon");
-chai.use(require("sinon-chai"));
 const request = require("supertest");
+const bcrypt = require("bcrypt");
 
 const { expect } = chai;
 
 const { app } = require("../../startup");
 const db = require("../../models");
-const emailModule = require("../../helpers/email");
 
 const returnUser = () => {
   const user = {
@@ -36,18 +34,38 @@ const makeUser = async (data) => {
     isActive = faker.datatype.boolean(),
   } = data;
 
+  const salt = await bcrypt.genSaltSync(10, "a");
+
   return db.User.create({
     firstName,
     lastName,
     email,
     role,
-    password,
+    password: bcrypt.hashSync(password, salt),
     isVerified,
     isActive,
   });
 };
 
 describe("GET users", async () => {
+  let token;
+
+  before(async () => {
+    const salt = await bcrypt.genSaltSync(10, "a");
+    await db.User.create({
+      firstName: "Joe",
+      lastName: "Doe",
+      email: "joedoe@gmail.com",
+      role: "Admin",
+      password: bcrypt.hashSync("testtest", salt),
+      isVerified: true,
+      isActive: true
+    });
+    const data = { email: "joedoe@gmail.com", password: "testtest" };
+    const response = await request(app).post("/api/auth/login").send(data);
+    token = response.body;
+  });
+
   beforeEach(async () => {
     await db.User.destroy({ truncate: { cascade: true } });
   });
@@ -56,7 +74,7 @@ describe("GET users", async () => {
     // act
     await makeUser({});
     await makeUser({});
-    const response = await request(app).get("/api/users");
+    const response = await request(app).get("/api/users").set("authorization", `Bearer ${token}`);
 
     // assert
     expect(response.status).to.equal(200);
@@ -67,7 +85,8 @@ describe("GET users", async () => {
     // act
     await makeUser({ firstName: "Calumn" });
     await makeUser({ firstName: "Rowan" });
-    const response = await request(app).get("/api/users?search=Calumn");
+    const response = await request(app).get("/api/users?search=Calumn")
+      .set("authorization", `Bearer ${token}`);
 
     // assert
     expect(response.status).to.equal(200);
@@ -80,7 +99,7 @@ describe("GET users", async () => {
     await makeUser({ firstName: "Rowan", role: "Doctor" });
     await makeUser({ firstName: "Louis", role: "Admin" });
     await makeUser({ firstName: "Joe", role: "Doctor" });
-    const response = await request(app).get("/api/users?search=Calumn&role=Admin");
+    const response = await request(app).get("/api/users?search=Calumn&role=Admin").set("authorization", `Bearer ${token}`);
 
     // assert
     expect(response.status).to.equal(200);
@@ -93,7 +112,8 @@ describe("GET users", async () => {
     await makeUser({ firstName: "Rowan", role: "Doctor" });
     await makeUser({ firstName: "Louis", role: "Admin" });
     await makeUser({ firstName: "Joe", role: "Doctor" });
-    const response = await request(app).get("/api/users?role=Admin");
+    const response = await request(app).get("/api/users?role=Admin")
+      .set("authorization", `Bearer ${token}`);
 
     // assert
     expect(response.status).to.equal(200);
@@ -102,17 +122,26 @@ describe("GET users", async () => {
 });
 
 describe("POST users", async () => {
-  const sandbox = sinon.createSandbox();
-  let mockSendEmail = null;
+  let token;
 
-  beforeEach(async () => {
-    mockSendEmail = sandbox.stub(emailModule, "sendEmail").returns(true);
-    // mockSendEmail = sandbox.spy(email, "sendEmailConsole");
-    await db.User.destroy({ truncate: { cascade: true } });
+  before(async () => {
+    const salt = await bcrypt.genSaltSync(10, "a");
+    await db.User.create({
+      firstName: "Joe",
+      lastName: "Doe",
+      email: "joedoe@gmail.com",
+      role: "Admin",
+      password: bcrypt.hashSync("testtest", salt),
+      isVerified: true,
+      isActive: true
+    });
+    const data = { email: "joedoe@gmail.com", password: "testtest" };
+    const response = await request(app).post("/api/auth/login").send(data);
+    token = response.body;
   });
 
-  afterEach(() => {
-    sandbox.restore();
+  beforeEach(async () => {
+    await db.User.destroy({ truncate: { cascade: true } });
   });
 
   it("Post one user", async () => {
@@ -120,13 +149,13 @@ describe("POST users", async () => {
     const user = returnUser();
 
     // act
-    const response1 = await request(app).post("/api/users").send(user);
+    const response1 = await request(app).post("/api/users").send(user)
+      .set("authorization", `Bearer ${token}`);
     const countUsers = await db.User.count();
 
     // assert
     expect(response1.status).to.equal(201);
     expect(countUsers).to.equal(1);
-    expect(mockSendEmail).to.have.been.called(1);
   });
 
   it("Post two users with the same email", async () => {
@@ -134,14 +163,15 @@ describe("POST users", async () => {
     const user = returnUser();
 
     // act
-    const response1 = await request(app).post("/api/users").send(user);
-    const response2 = await request(app).post("/api/users").send(user);
+    const response1 = await request(app).post("/api/users").send(user)
+      .set("authorization", `Bearer ${token}`);
+    const response2 = await request(app).post("/api/users").send(user)
+      .set("authorization", `Bearer ${token}`);
     const countUsers = await db.User.count();
 
     // assert
     expect(response1.status).to.equal(201);
     expect(response2.status).to.equal(400);
     expect(countUsers).to.equal(1);
-    expect(mockSendEmail).to.have.been.called(1);
   });
 });

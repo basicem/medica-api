@@ -64,7 +64,6 @@ const getById = async (id) => {
 
 const getByEmail = async (email) => {
   const user = await db.User.findOne({ where: { email } });
-
   if (user === null) {
     throw new NotFound("User not found.");
   }
