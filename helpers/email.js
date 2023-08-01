@@ -1,34 +1,33 @@
-const sgMail = require("@sendgrid/mail");
+const nodemailer = require("nodemailer");
+const handlebars = require("handlebars");
+const fs = require("fs");
 
-const sendEmailSendgrid = async (to, from, subject, text, html) => {
+async function sendEmail(toEmail, subject, d) {
+  const source = fs.readFileSync("templates/index.handlebars", "utf8");
+  const template = handlebars.compile(source);
+  const html = template(d);
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.MAILTRAP_HOST,
+    port: process.env.MAILTRAP_PORT,
+    auth: {
+      user: process.env.MAILTRAP_USERNAME,
+      pass: process.env.MAILTRAP_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.SENDER_EMAIL,
+    to: toEmail,
+    subject,
+    html,
+  };
+
   try {
-    await sgMail.send({
-      to, from, subject, text, html
-    });
-    return true;
+    await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.error(error);
-    return false;
+    console.error("Error sending email:", error);
   }
-};
+}
 
-const sendEmailConsole = async (to, from, subject, text, html) => {
-  console.log("Console email backend: ", to, from, subject, text, html);
-};
-
-const emailBackendFactory = () => {
-  const backend = process.env.EMAIL_BACKEND;
-  switch (backend) {
-    case "console":
-      return sendEmailConsole;
-    case "sendgrid":
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-      return sendEmailSendgrid;
-    default:
-      throw new Error(`Invalid email backend: ${backend}`);
-  }
-};
-
-const sendEmail = emailBackendFactory();
-
-module.exports = { sendEmail };
+module.exports = sendEmail;

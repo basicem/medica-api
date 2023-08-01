@@ -12,7 +12,8 @@ const createPatient = async ({
   address,
   city,
   phoneNumber,
-  email
+  email,
+  doctorId
 }) => {
   if ((await db.Patient.findOne({ where: { email } })) !== null) {
     throw new MedicaError("Patient with this email already exists");
@@ -27,7 +28,8 @@ const createPatient = async ({
       address,
       city,
       phoneNumber,
-      email
+      email,
+      doctor_id: doctorId
     });
     return patient;
   } catch (err) {
@@ -52,7 +54,9 @@ const editPatient = async (id, data) => {
   }
 };
 
-const getAllPatients = async ({ search, page, pageSize }) => {
+const getAllPatients = async ({
+  search, page, pageSize, doctorId
+}) => {
   try {
     const { limit, offset } = getLimitAndOffset(page, pageSize);
     const patientFilters = {};
@@ -63,6 +67,9 @@ const getAllPatients = async ({ search, page, pageSize }) => {
         { email: { [Op.iLike]: `%${search}` } },
       ];
     }
+    patientFilters[Op.and] = [
+      { doctor_id: { [Op.eq]: doctorId } },
+    ];
 
     const { rows, count } = await db.Patient.findAndCountAll({
       limit,
@@ -98,9 +105,66 @@ const getAllPatients = async ({ search, page, pageSize }) => {
   }
 };
 
-const getPatient = async (slug) => {
+const searchPatients = async ({ search, doctorId }) => {
+  try {
+    const page = 0;
+    const pageSize = 30;
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+    console.log("Search je: ", search);
+    console.log("DoctorId je: ", doctorId);
+    const { rows, count } = await db.Patient.findAndCountAll({
+      limit,
+      offset,
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { firstName: { [Op.iLike]: `${search}%` } },
+              { lastName: { [Op.iLike]: `${search}%` } },
+            ],
+          },
+          { doctor_id: { [Op.eq]: doctorId } },
+        ],
+      },
+      order: [
+        ["firstName", "ASC"],
+        ["lastName", "ASC"]
+      ],
+      attributes: ["id", "image", "firstName", "lastName", "email", "doctor_id"],
+    });
+    console.log("Hi: ", rows);
+    return paginate({
+      count,
+      rows: rows.map((a) => ({
+        id: a.id,
+        image: a.image,
+        firstName: a.firstName,
+        lastName: a.lastName,
+        email: a.email,
+      })),
+      page,
+      pageSize,
+    });
+  } catch (err) {
+    throw new MedicaError("Unable to return patients");
+  }
+};
+
+const getPatientBySlug = async (slug) => {
   const patient = await db.Patient.findOne({
     where: { slug },
+    attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
+      "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
+  });
+
+  if (patient === null) throw new NotFound("Patient not found.");
+
+  return patient;
+};
+
+const getPatientById = async (id) => {
+  const patient = await db.Patient.findOne({
+    where: { id },
     attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
       "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
   });
@@ -121,5 +185,11 @@ const deletePatient = async (id) => {
 };
 
 module.exports = {
-  createPatient, getAllPatients, getPatient, deletePatient, editPatient
+  createPatient,
+  getAllPatients,
+  getPatientBySlug,
+  deletePatient,
+  editPatient,
+  getPatientById,
+  searchPatients
 };

@@ -4,17 +4,6 @@ const bcrypt = require("bcrypt");
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 const { paginate, getLimitAndOffset } = require("../helpers/pagination");
-const { sendEmail } = require("../helpers/email");
-
-const sendUserCreateEmail = async (user, rawPassword) => {
-  const to = user.email;
-  const from = process.env.NO_REPLY_EMAIL;
-  const subject = "[WELCOME TO MEDICA]";
-  const text = `Hello, here is your password: ${rawPassword}`;
-  const html = `<p>Hello, here is your password: ${rawPassword}</p>`;
-
-  await sendEmail(to, from, subject, text, html);
-};
 
 const create = async ({
   firstName,
@@ -23,7 +12,7 @@ const create = async ({
   role,
   password,
   isVerified,
-  isActive
+  isActive,
 }) => {
   if ((await db.User.findOne({ where: { email } })) !== null) {
     throw new MedicaError("User with this email already exists");
@@ -38,9 +27,8 @@ const create = async ({
       role,
       password: bcrypt.hashSync(password, salt),
       isVerified,
-      isActive
+      isActive,
     });
-    await sendUserCreateEmail(user, password);
     return user;
   } catch (err) {
     throw new MedicaError("Unable to create user.");
@@ -48,7 +36,6 @@ const create = async ({
 };
 
 const update = async (id, data) => {
-  // console.log("User is: ", id);
   const user = await db.User.findOne(
     { where: { id } }
   );
@@ -77,7 +64,6 @@ const getById = async (id) => {
 
 const getByEmail = async (email) => {
   const user = await db.User.findOne({ where: { email } });
-
   if (user === null) {
     throw new NotFound("User not found.");
   }

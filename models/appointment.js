@@ -1,7 +1,7 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Patient extends Model {
+  class Appointment extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,19 +9,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Patient.hasMany(models.Appointment, {
-        foreignKey: "patient_id",
-        onDelete: "CASCADE",
-        as: "patient",
-      });
-      Patient.belongsTo(models.User, {
+      Appointment.belongsTo(models.User, {
         foreignKey: "doctor_id",
         onDelete: "CASCADE",
         as: "doctor",
       });
+      Appointment.belongsTo(models.Patient, {
+        foreignKey: "patient_id",
+        onDelete: "CASCADE",
+        as: "patient",
+      });
     }
   }
-  Patient.init(
+  Appointment.init(
     {
 
       id: {
@@ -36,44 +36,40 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
 
-      image: {
-        field: "image",
+      title: {
+        field: "title",
         type: DataTypes.STRING,
       },
 
-      firstName: {
-        field: "first_name",
+      description: {
+        field: "description",
         type: DataTypes.STRING,
       },
 
-      dateOfBirth: {
-        field: "date_of_birth",
-        type: DataTypes.DATE,
+      isVirtual: {
+        field: "is_virtual",
+        type: DataTypes.BOOLEAN,
       },
 
-      lastName: {
-        field: "last_name",
+      link: {
+        field: "link",
         type: DataTypes.STRING,
       },
 
-      address: {
-        field: "address",
-        type: DataTypes.STRING,
+      status: {
+        field: "status",
+        type: DataTypes.ENUM,
+        values: ["Pending", "Canceled", "Confirmed"]
       },
 
-      city: {
-        field: "city",
-        type: DataTypes.STRING,
+      startDate: {
+        field: "start_date",
+        type: DataTypes.DATE
       },
 
-      phoneNumber: {
-        field: "phone_number",
-        type: DataTypes.STRING,
-      },
-
-      email: {
-        field: "email",
-        type: DataTypes.STRING,
+      endDate: {
+        field: "end_date",
+        type: DataTypes.DATE
       },
 
       createdAt: {
@@ -89,9 +85,10 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
 
-      modelName: "Patient",
+      modelName: "Appointment",
+
     }
   );
 
-  return Patient;
+  return Appointment;
 };

@@ -12,6 +12,7 @@ const patientSchema = Joi.object({
     .pattern(/^[+]*[-\s/0-9]*$/)
     .required(),
   email: Joi.string().email().lowercase().required(),
+  doctorId: Joi.number().integer().required()
 });
 
 module.exports = { patientSchema };

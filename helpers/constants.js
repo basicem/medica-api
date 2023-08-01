@@ -3,4 +3,10 @@ const ROLES = {
   DOCTOR: "Doctor",
 };
 
-module.exports = ROLES;
+const STATUS = {
+  PENDING: "Pending",
+  CONFIRMED: "Confirmed",
+  CANCELED: "Canceled"
+};
+
+module.exports = { ROLES, STATUS };
