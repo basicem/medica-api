@@ -4,7 +4,7 @@ const { resolveError } = require("../helpers/controllers");
 
 const list = async (req, res) => {
   try {
-    const id = req.user;
+    const { id } = req.user;
     const data = { ...req.query, doctorId: id };
     const patients = await patientServices.getAllPatients(data);
     return res.status(200).json(patients);
@@ -15,7 +15,7 @@ const list = async (req, res) => {
 
 const search = async (req, res) => {
   try {
-    const id = req.user;
+    const { id } = req.user;
     const data = { ...req.query, doctorId: id };
     const patients = await patientServices.searchPatients(data);
     return res.status(200).json(patients);
@@ -55,7 +55,7 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const id = req.user;
+    const { id } = req.user;
     const data = { ...req.body, doctorId: id };
     const value = await patientSchema.validateAsync(data);
     const patient = await patientServices.createPatient(value);

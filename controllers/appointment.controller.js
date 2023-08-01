@@ -6,7 +6,7 @@ const { resolveError } = require("../helpers/controllers");
 
 const create = async (req, res) => {
   try {
-    const id = req.user;
+    const { id } = req.user;
     const data = { ...req.body, doctorId: id };
     const value = await appointmentSchema.validateAsync(data);
     const appointment = await appointmentService.createAppointment(value);
@@ -32,7 +32,7 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    const id = req.user;
+    const { id } = req.user;
     const appointments = await appointmentService.getAppointmentsByDoctor(id, req.query);
     return res.status(200).json(appointments);
   } catch (err) {

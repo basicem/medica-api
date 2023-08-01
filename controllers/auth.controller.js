@@ -21,8 +21,7 @@ const session = async (req, res) => {
       return res.status(401).json("Unauthorized");
     }
     const token = authorizationHeader.split(" ")[1];
-    const { id } = await authService.verifyToken(token);
-    const user = await userServices.getById(id);
+    const user = await authService.verifyToken(token);
     return res.status(200).json(user);
   } catch (err) {
     return resolveError(err, res);
