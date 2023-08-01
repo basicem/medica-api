@@ -1,13 +1,10 @@
 const patientServices = require("../services/patient.services");
 const { patientSchema } = require("../schemas/patient");
 const { resolveError } = require("../helpers/controllers");
-const authService = require("../services/auth.services");
 
 const list = async (req, res) => {
   try {
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader.split(" ")[1];
-    const { id } = await authService.verifyToken(token);
+    const id = req.user;
     const data = { ...req.query, doctorId: id };
     const patients = await patientServices.getAllPatients(data);
     return res.status(200).json(patients);
@@ -18,9 +15,7 @@ const list = async (req, res) => {
 
 const search = async (req, res) => {
   try {
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader.split(" ")[1];
-    const { id } = await authService.verifyToken(token);
+    const id = req.user;
     const data = { ...req.query, doctorId: id };
     const patients = await patientServices.searchPatients(data);
     return res.status(200).json(patients);
@@ -60,9 +55,7 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader.split(" ")[1];
-    const { id } = await authService.verifyToken(token);
+    const id = req.user;
     const data = { ...req.body, doctorId: id };
     const value = await patientSchema.validateAsync(data);
     const patient = await patientServices.createPatient(value);
