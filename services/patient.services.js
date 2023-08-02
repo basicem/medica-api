@@ -184,6 +184,65 @@ const deletePatient = async (id) => {
   }
 };
 
+const addMedication = async ({
+  name,
+  dose,
+  frequency,
+  prescribedOn,
+  patientId
+}) => {
+  if ((await db.Patient.findOne({ where: { id: patientId } })) === null) {
+    throw new MedicaError("Patient not found");
+  }
+  try {
+    const medication = await db.Medication.create({
+      name,
+      dose,
+      frequency,
+      prescribedOn,
+      patient_id: patientId
+    });
+    return medication;
+  } catch (err) {
+    throw new MedicaError("Unable to add medication.");
+  }
+};
+
+const getAllMedication = async ({
+  patientId, page, pageSize
+}) => {
+  try {
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+
+    const { rows, count } = await db.Medication.findAndCountAll({
+      limit,
+      offset,
+      where: {
+        patient_id: patientId
+      },
+      order: [
+        ["prescribedOn", "DESC"],
+      ],
+      attributes: ["id", "name", "dose", "frequency", "prescribedOn"],
+    });
+
+    return paginate({
+      count,
+      rows: rows.map((m) => ({
+        id: m.id,
+        name: m.name,
+        dose: m.dose,
+        frequency: m.frequency,
+        prescribedOn: m.prescribedOn,
+      })),
+      page,
+      pageSize,
+    });
+  } catch (err) {
+    throw new MedicaError("Unable to return medications");
+  }
+};
+
 module.exports = {
   createPatient,
   getAllPatients,
@@ -191,5 +250,7 @@ module.exports = {
   deletePatient,
   editPatient,
   getPatientById,
-  searchPatients
+  searchPatients,
+  addMedication,
+  getAllMedication,
 };

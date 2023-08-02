@@ -4,6 +4,14 @@ const { ROLES } = require("../helpers/constants");
 const { verifyJWT } = require("../middleware/authorisation");
 const { verifyRoles } = require("../middleware/authorisation");
 
+// add medication to patient
+
+router.post("/medication", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.addMedication);
+
+// get medication for patient
+
+router.get("/medication", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.getAllMedication);
+
 router.get("/", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.list);
 
 router.get("/search", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.search);

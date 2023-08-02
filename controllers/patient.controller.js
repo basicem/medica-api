@@ -1,5 +1,6 @@
 const patientServices = require("../services/patient.services");
 const { patientSchema } = require("../schemas/patient");
+const { medicationSchema } = require("../schemas/medication");
 const { resolveError } = require("../helpers/controllers");
 
 const list = async (req, res) => {
@@ -86,6 +87,25 @@ const remove = async (req, res) => {
   }
 };
 
+const addMedication = async (req, res) => {
+  try {
+    const value = await medicationSchema.validateAsync(req.body);
+    const medication = await patientServices.addMedication(value);
+    return res.status(201).json({ id: medication.id });
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const getAllMedication = async (req, res) => {
+  try {
+    const medications = await patientServices.getAllMedication(req.query);
+    return res.status(200).json(medications);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
 module.exports = {
-  create, get, list, listByDoctor, retrieve, remove, update, search
+  create, get, list, listByDoctor, retrieve, remove, update, search, addMedication, getAllMedication
 };
