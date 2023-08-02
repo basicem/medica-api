@@ -225,7 +225,6 @@ const getAllMedication = async ({
       ],
       attributes: ["id", "name", "dose", "frequency", "prescribedOn"],
     });
-
     return paginate({
       count,
       rows: rows.map((m) => ({
