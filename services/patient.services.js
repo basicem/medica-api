@@ -110,8 +110,6 @@ const searchPatients = async ({ search, doctorId }) => {
     const page = 0;
     const pageSize = 30;
     const { limit, offset } = getLimitAndOffset(page, pageSize);
-    console.log("Search je: ", search);
-    console.log("DoctorId je: ", doctorId);
     const { rows, count } = await db.Patient.findAndCountAll({
       limit,
       offset,
@@ -132,7 +130,7 @@ const searchPatients = async ({ search, doctorId }) => {
       ],
       attributes: ["id", "image", "firstName", "lastName", "email", "doctor_id"],
     });
-    console.log("Hi: ", rows);
+
     return paginate({
       count,
       rows: rows.map((a) => ({
@@ -189,11 +187,26 @@ const addMedication = async ({
   dose,
   frequency,
   prescribedOn,
-  patientId
+  patientId,
+  doctorId
 }) => {
-  if ((await db.Patient.findOne({ where: { id: patientId } })) === null) {
-    throw new MedicaError("Patient not found");
-  }
+  const patient = await db.Patient.findOne({
+    where: { id: patientId },
+    include: [
+      {
+        model: db.User,
+        as: "doctor",
+        attributes: ["id"],
+      },
+    ],
+    attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
+      "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
+  });
+
+  if (patient === null) throw new NotFound("Patient not found.");
+
+  if (patient.doctor.id !== doctorId) throw new MedicaError("No authority.");
+
   try {
     const medication = await db.Medication.create({
       name,

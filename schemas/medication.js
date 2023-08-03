@@ -7,7 +7,8 @@ const medicationSchema = Joi.object({
     .pattern(/^(?:(?:\d+\s)?(?:po|per os|by mouth|bid|tid|qid|hs|prn|stat|ac|pc)\b)|\w+$/i),
   prescribedOn: Joi.date().iso().messages({ "date.format": "Date format is YYYY-MM-DD" })
     .required(),
-  patientId: Joi.number().integer().required()
+  patientId: Joi.number().integer().required(),
+  doctorId: Joi.number().integer().required(),
 });
 
 module.exports = { medicationSchema };

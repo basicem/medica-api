@@ -89,7 +89,9 @@ const remove = async (req, res) => {
 
 const addMedication = async (req, res) => {
   try {
-    const value = await medicationSchema.validateAsync(req.body);
+    const { id } = req.user;
+    const data = { ...req.body, doctorId: id };
+    const value = await medicationSchema.validateAsync(data);
     const medication = await patientServices.addMedication(value);
     return res.status(201).json({ id: medication.id });
   } catch (err) {
