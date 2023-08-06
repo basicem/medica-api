@@ -68,9 +68,10 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const data = await patientSchema.validateAsync(req.body);
-    const { id } = req.params;
-    const patient = await patientServices.editPatient(id, data);
+    const { id } = req.user;
+    const data = await patientSchema.validateAsync({ ...req.body, doctorId: id });
+    const patientParams = req.params;
+    const patient = await patientServices.editPatient(patientParams.id, data);
     return res.status(200).json({ id: patient.id });
   } catch (err) {
     return resolveError(err, res);
@@ -89,8 +90,8 @@ const remove = async (req, res) => {
 
 const addMedication = async (req, res) => {
   try {
-    const { id } = req.user;
-    const data = { ...req.body, doctorId: id };
+    const { id } = req.params;
+    const data = { ...req.body, patientId: id };
     const value = await medicationSchema.validateAsync(data);
     const medication = await patientServices.addMedication(value);
     return res.status(201).json({ id: medication.id });
@@ -101,13 +102,50 @@ const addMedication = async (req, res) => {
 
 const getAllMedication = async (req, res) => {
   try {
-    const medications = await patientServices.getAllMedication(req.query);
+    const { id } = req.params;
+    const medications = await patientServices.getAllMedication({ ...req.query, patientId: id });
     return res.status(200).json(medications);
   } catch (err) {
     return resolveError(err, res);
   }
 };
 
+const deleteMedication = async (req, res) => {
+  try {
+    const { medicationId } = req.params;
+    await patientServices.deleteMedication(medicationId);
+    return res.status(204).send();
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const updateMedication = async (req, res) => {
+  try {
+    console.log("Hi");
+    const { id } = req.params;
+    const { medicationId } = req.params;
+    const data = { ...req.body, patientId: id };
+    const value = await medicationSchema.validateAsync(data);
+    const medication = await patientServices.editMedication(value, medicationId);
+    return res.status(201).json({ id: medication.id });
+  } catch (err) {
+    console.log("Error is ", err);
+    return resolveError(err, res);
+  }
+};
+
 module.exports = {
-  create, get, list, listByDoctor, retrieve, remove, update, search, addMedication, getAllMedication
+  create,
+  get,
+  list,
+  listByDoctor,
+  retrieve,
+  remove,
+  update,
+  search,
+  addMedication,
+  getAllMedication,
+  deleteMedication,
+  updateMedication
 };

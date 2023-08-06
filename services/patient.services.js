@@ -184,33 +184,23 @@ const deletePatient = async (id) => {
 
 const addMedication = async ({
   name,
-  dose,
+  doseValue,
+  doseMeasurement,
   frequency,
   prescribedOn,
-  patientId,
-  doctorId
+  patientId
 }) => {
   const patient = await db.Patient.findOne({
     where: { id: patientId },
-    include: [
-      {
-        model: db.User,
-        as: "doctor",
-        attributes: ["id"],
-      },
-    ],
-    attributes: ["id", "slug", "image", "firstName", "lastName", "dateOfBirth",
-      "email", "phoneNumber", "address", "city", "createdAt", "updatedAt"],
   });
 
   if (patient === null) throw new NotFound("Patient not found.");
 
-  if (patient.doctor.id !== doctorId) throw new MedicaError("No authority.");
-
   try {
     const medication = await db.Medication.create({
       name,
-      dose,
+      doseValue,
+      doseMeasurement,
       frequency,
       prescribedOn,
       patient_id: patientId
@@ -236,14 +226,15 @@ const getAllMedication = async ({
       order: [
         ["prescribedOn", "DESC"],
       ],
-      attributes: ["id", "name", "dose", "frequency", "prescribedOn"],
+      attributes: ["id", "name", "doseValue", "doseMeasurement", "frequency", "prescribedOn"],
     });
     return paginate({
       count,
       rows: rows.map((m) => ({
         id: m.id,
         name: m.name,
-        dose: m.dose,
+        doseValue: m.doseValue,
+        doseMeasurement: m.doseMeasurement,
         frequency: m.frequency,
         prescribedOn: m.prescribedOn,
       })),
@@ -252,6 +243,33 @@ const getAllMedication = async ({
     });
   } catch (err) {
     throw new MedicaError("Unable to return medications");
+  }
+};
+
+const deleteMedication = async (medicationId) => {
+  try {
+    return await db.Medication.destroy({
+      where: { id: medicationId }
+    });
+  } catch (err) {
+    throw new MedicaError("Unable to delete medication");
+  }
+};
+
+const editMedication = async (data, medicationId) => {
+  const medication = await db.Medication.findOne(
+    { where: { id: medicationId } }
+  );
+
+  if (medication === null) {
+    throw new NotFound("Medication not found.");
+  }
+
+  try {
+    medication.set(data);
+    return await medication.save();
+  } catch (err) {
+    throw new MedicaError("Unable to update medication.");
   }
 };
 
@@ -265,4 +283,6 @@ module.exports = {
   searchPatients,
   addMedication,
   getAllMedication,
+  deleteMedication,
+  editMedication
 };

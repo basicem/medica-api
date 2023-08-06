@@ -19,7 +19,12 @@ module.exports = {
         allowNull: false,
       },
 
-      dose: {
+      dose_value: {
+        type: Sequelize.FLOAT,
+        allowNull: false
+      },
+
+      dose_measurement: {
         type: Sequelize.STRING,
         allowNull: false
       },

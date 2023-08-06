@@ -31,14 +31,37 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      dose: {
-        field: "dose",
-        type: DataTypes.STRING,
+      doseValue: {
+        field: "dose_value",
+        type: DataTypes.FLOAT,
+      },
+
+      doseMeasurement: {
+        field: "dose_measurement",
+        type: DataTypes.ENUM,
+        values: ["g", "mg", "mcg", "ng", "mL", "IU", "U"]
       },
 
       frequency: {
         field: "frequency",
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM,
+        values: [
+          "Once daily",
+          "Twice daily",
+          "Three times daily",
+          "Four times daily",
+          "Every 6 hours",
+          "Every 8 hours",
+          "Every 12 hours",
+          "Every 24 hours",
+          "As needed",
+          "Before meals",
+          "After meals",
+          "Bedtime",
+          "Every other day",
+          "Weekly",
+          "Monthly",
+        ]
       },
 
       prescribedOn: {
