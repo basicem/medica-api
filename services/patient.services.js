@@ -110,8 +110,6 @@ const searchPatients = async ({ search, doctorId }) => {
     const page = 0;
     const pageSize = 30;
     const { limit, offset } = getLimitAndOffset(page, pageSize);
-    console.log("Search je: ", search);
-    console.log("DoctorId je: ", doctorId);
     const { rows, count } = await db.Patient.findAndCountAll({
       limit,
       offset,
@@ -132,7 +130,7 @@ const searchPatients = async ({ search, doctorId }) => {
       ],
       attributes: ["id", "image", "firstName", "lastName", "email", "doctor_id"],
     });
-    console.log("Hi: ", rows);
+
     return paginate({
       count,
       rows: rows.map((a) => ({
@@ -184,6 +182,97 @@ const deletePatient = async (id) => {
   }
 };
 
+const addMedication = async ({
+  name,
+  doseValue,
+  doseMeasurement,
+  frequency,
+  prescribedOn,
+  patientId
+}) => {
+  const patient = await db.Patient.findOne({
+    where: { id: patientId },
+  });
+
+  if (patient === null) throw new NotFound("Patient not found.");
+
+  try {
+    const medication = await db.Medication.create({
+      name,
+      doseValue,
+      doseMeasurement,
+      frequency,
+      prescribedOn,
+      patient_id: patientId
+    });
+    return medication;
+  } catch (err) {
+    throw new MedicaError("Unable to add medication.");
+  }
+};
+
+const getAllMedication = async ({
+  patientId, page, pageSize
+}) => {
+  try {
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+
+    const { rows, count } = await db.Medication.findAndCountAll({
+      limit,
+      offset,
+      where: {
+        patient_id: patientId
+      },
+      order: [
+        ["prescribedOn", "DESC"],
+      ],
+      attributes: ["id", "name", "doseValue", "doseMeasurement", "frequency", "prescribedOn"],
+    });
+    return paginate({
+      count,
+      rows: rows.map((m) => ({
+        id: m.id,
+        name: m.name,
+        doseValue: m.doseValue,
+        doseMeasurement: m.doseMeasurement,
+        frequency: m.frequency,
+        prescribedOn: m.prescribedOn,
+      })),
+      page,
+      pageSize,
+    });
+  } catch (err) {
+    throw new MedicaError("Unable to return medications");
+  }
+};
+
+const deleteMedication = async (medicationId) => {
+  try {
+    return await db.Medication.destroy({
+      where: { id: medicationId }
+    });
+  } catch (err) {
+    throw new MedicaError("Unable to delete medication");
+  }
+};
+
+const editMedication = async (data, medicationId) => {
+  const medication = await db.Medication.findOne(
+    { where: { id: medicationId } }
+  );
+
+  if (medication === null) {
+    throw new NotFound("Medication not found.");
+  }
+
+  try {
+    medication.set(data);
+    return await medication.save();
+  } catch (err) {
+    throw new MedicaError("Unable to update medication.");
+  }
+};
+
 module.exports = {
   createPatient,
   getAllPatients,
@@ -191,5 +280,9 @@ module.exports = {
   deletePatient,
   editPatient,
   getPatientById,
-  searchPatients
+  searchPatients,
+  addMedication,
+  getAllMedication,
+  deleteMedication,
+  editMedication
 };
