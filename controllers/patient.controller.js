@@ -122,7 +122,6 @@ const deleteMedication = async (req, res) => {
 
 const updateMedication = async (req, res) => {
   try {
-    console.log("Hi");
     const { id } = req.params;
     const { medicationId } = req.params;
     const data = { ...req.body, patientId: id };
@@ -130,7 +129,6 @@ const updateMedication = async (req, res) => {
     const medication = await patientServices.editMedication(value, medicationId);
     return res.status(201).json({ id: medication.id });
   } catch (err) {
-    console.log("Error is ", err);
     return resolveError(err, res);
   }
 };
