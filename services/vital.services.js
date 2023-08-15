@@ -9,9 +9,19 @@ const create = async ({
   lowerLimit,
   upperLimit,
 }) => {
-  if ((await db.Vital.findOne({ where: { name } })) !== null) {
+  const optVital = await db.Vital.findOne({
+    where: {
+      name: {
+        [Op.iLike]: name
+      }
+    }
+  });
+
+  if (optVital !== null) {
     throw new MedicaError("Vital with this name already exists");
   }
+
+  if (lowerLimit > upperLimit) { throw new MedicaError("Lower Limit must be smaller that Upper Limit"); }
 
   try {
     const vital = await db.Vital.create({
