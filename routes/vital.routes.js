@@ -8,4 +8,6 @@ router.get("/", verifyJWT, verifyRoles(ROLES.ADMIN), vital.list);
 
 router.post("/", verifyJWT, verifyRoles(ROLES.ADMIN), vital.create);
 
+router.put("/:id", verifyJWT, verifyRoles(ROLES.ADMIN), vital.update);
+
 module.exports = router;

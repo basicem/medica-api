@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 
@@ -24,9 +26,33 @@ const create = async ({
   }
 };
 
-const list = async () => {
+const editVital = async (data) => {
+  const vital = await db.Vital.findOne(
+    { where: { id: data.id } }
+  );
+
+  if (vital === null) {
+    throw new NotFound("Vital not found.");
+  }
+
+  try {
+    vital.set(data);
+    return await vital.save();
+  } catch (err) {
+    throw new MedicaError("Unable to update vital.");
+  }
+};
+
+const list = async ({ search }) => {
   const vitals = await db.Vital.findAll({
+    where: {
+      name: { [Op.iLike]: `${search}%` },
+    },
     attributes: ["id", "name", "unitMeasurement", "lowerLimit", "upperLimit"],
+    order: [
+      ["updatedAt", "DESC"],
+    ],
+    limit: 100
   });
 
   if (vitals === null) throw new NotFound("Vitals not found.");
@@ -34,4 +60,4 @@ const list = async () => {
   return vitals;
 };
 
-module.exports = { create, list };
+module.exports = { create, list, editVital };

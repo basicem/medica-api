@@ -19,6 +19,15 @@ const create = async (req, res) => {
   }
 };
 
+const update = async (req, res) => {
+  try {
+    const vital = await vitalServices.editVital(req.body);
+    return res.status(200).json({ id: vital.id });
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
 module.exports = {
-  create, list
+  create, list, update
 };
