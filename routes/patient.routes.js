@@ -16,6 +16,7 @@ router.delete("/:id/medications/:medicationId", verifyJWT, verifyRoles(ROLES.DOC
 // update medication by id
 
 router.put("/:id/medications/:medicationId", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.updateMedication);
+
 // get medication for patient
 
 router.get("/:id/medications", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.getAllMedication);
@@ -47,5 +48,15 @@ router.put("/:id", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPati
 // delete the patient by id
 
 router.delete("/:id", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.remove);
+
+// add vital to patient
+
+router.post("/:id/vitals", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.addPatientVital);
+
+// get vitals for patient
+
+router.get("/:id/vitals", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.getPatientVitals);
+
+router.get("/:id/vitals/:vitalId", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.getPatientVitalHistory);
 
 module.exports = router;

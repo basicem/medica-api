@@ -99,21 +99,18 @@ module.exports = {
         },
 
         archived_at: {
-          allowNull: false,
+          allowNull: true,
           type: Sequelize.DATE
         },
 
       },
     );
 
-    await queryInterface.addConstraint("PatientVitals", {
-      type: "unique",
-      fields: ["patient_id", "vital_id"],
-      name: "unique_patient_vital_constraint",
-      where: {
-        is_archived: false,
-      },
-    });
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX unique_patient_vital_archived_false
+      ON "PatientVitals" ("patient_id", "vital_id")
+      WHERE "is_archived" = false;
+    `);
   },
 
   async down(queryInterface, Sequelize) {
@@ -123,7 +120,10 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeConstraint("PatientVitals", "unique_patient_vital_constraint");
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS unique_patient_vital_archived_false;
+    `);
+
     await queryInterface.dropTable("PatientVitals");
     await queryInterface.dropTable("Vitals");
   }

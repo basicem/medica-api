@@ -7,6 +7,14 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
+    static associate(models) {
+      // define association here
+      // Vital.hasMany(models.PatientVital, {
+      //   foreignKey: "patient_id",
+      //   onDelete: "CASCADE",
+      //   as: "vital",
+      // });
+    }
   }
   Vital.init(
     {

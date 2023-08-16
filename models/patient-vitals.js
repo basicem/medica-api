@@ -1,7 +1,7 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class PatientVitals extends Model {
+  class PatientVital extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,19 +9,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      PatientVitals.belongsTo(models.Vital, {
+      PatientVital.belongsTo(models.Vital, {
         foreignKey: "vital_id",
         onDelete: "CASCADE",
         as: "vital",
       });
-      PatientVitals.belongsTo(models.Patient, {
+      PatientVital.belongsTo(models.Patient, {
         foreignKey: "patient_id",
         onDelete: "CASCADE",
         as: "patient",
       });
     }
   }
-  PatientVitals.init(
+  PatientVital.init(
     {
 
       id: {
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       value: {
-        field: "unit_measurement",
+        field: "value",
         type: DataTypes.DOUBLE,
         allowNull: false,
       },
@@ -41,6 +41,11 @@ module.exports = (sequelize, DataTypes) => {
         field: "created_at",
         type: DataTypes.DATE,
         allowNull: false,
+      },
+
+      updatedAt: {
+        field: "updated_at",
+        type: DataTypes.DATE,
       },
 
       isArchived: {
@@ -52,15 +57,15 @@ module.exports = (sequelize, DataTypes) => {
       archivedAt: {
         field: "archived_at",
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {
       sequelize,
 
-      modelName: "PatientVitals",
+      modelName: "PatientVital",
     }
   );
 
-  return PatientVitals;
+  return PatientVital;
 };
