@@ -159,7 +159,11 @@ const getPatientVitals = async (req, res) => {
 const getPatientVitalHistory = async (req, res) => {
   try {
     const { id, vitalId } = req.params;
-    const vitals = await patientServices.getPatientVitalHistory({ patientId: id, vitalId });
+    const vitals = await patientServices.getPatientVitalHistory({
+      ...req.query,
+      patientId: id,
+      vitalId
+    });
     return res.status(200).json(vitals);
   } catch (err) {
     return resolveError(err, res);

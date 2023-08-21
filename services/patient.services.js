@@ -334,9 +334,15 @@ const getAllPatientVitals = async ({ patientId }) => {
   }
 };
 
-const getPatientVitalHistory = async ({ patientId, vitalId }) => {
+const getPatientVitalHistory = async ({
+  patientId, vitalId, page, pageSize
+}) => {
   try {
-    const patientVitals = await db.PatientVital.findAll({
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+
+    const { rows, count } = await db.PatientVital.findAndCountAll({
+      limit,
+      offset,
       include: [
         { model: db.Vital, as: "vital", attributes: ["id", "name", "unitMeasurement", "lowerLimit", "upperLimit"] },
       ],
@@ -349,7 +355,13 @@ const getPatientVitalHistory = async ({ patientId, vitalId }) => {
       ],
       attributes: ["id", "value", "createdAt"],
     });
-    return patientVitals;
+
+    return paginate({
+      count,
+      rows,
+      page,
+      pageSize,
+    });
   } catch (err) {
     throw new MedicaError("Unable to return vitals for patient.");
   }

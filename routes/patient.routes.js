@@ -7,56 +7,56 @@ const { hasPatientPermission } = require("../permissions/doctors.permissions");
 
 // add medication to patient
 
-router.post("/:id/medications", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.addMedication);
+router.post("/:id/medications", verifyJWT, verifyRoles([ROLES.DOCTOR]), checkPermission(hasPatientPermission), patient.addMedication);
 
 // delete medication to patient
 
-router.delete("/:id/medications/:medicationId", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.deleteMedication);
+router.delete("/:id/medications/:medicationId", verifyJWT, verifyRoles([ROLES.DOCTOR]), checkPermission(hasPatientPermission), patient.deleteMedication);
 
 // update medication by id
 
-router.put("/:id/medications/:medicationId", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.updateMedication);
+router.put("/:id/medications/:medicationId", verifyJWT, verifyRoles([ROLES.DOCTOR]), patient.updateMedication);
 
 // get medication for patient
 
-router.get("/:id/medications", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.getAllMedication);
+router.get("/:id/medications", verifyJWT, verifyRoles([ROLES.DOCTOR]), patient.getAllMedication);
 
 // get all patients
 
-router.get("/", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.list);
+router.get("/", verifyJWT, verifyRoles([ROLES.DOCTOR]), patient.list);
 
 // search pateints (auto complete)
 
-router.get("/search", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.search);
+router.get("/search", verifyJWT, verifyRoles([ROLES.DOCTOR]), patient.search);
 
 // get patient by id
 
-router.get("/:id", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.get);
+router.get("/:id", verifyJWT, verifyRoles([ROLES.DOCTOR]), checkPermission(hasPatientPermission), patient.get);
 
 // get patient by slug
 
-router.get("/slug/:slug", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.retrieve);
+router.get("/slug/:slug", verifyJWT, verifyRoles([ROLES.DOCTOR]), checkPermission(hasPatientPermission), patient.retrieve);
 
 // post a patient
 
-router.post("/", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.create);
+router.post("/", verifyJWT, verifyRoles([ROLES.DOCTOR]), patient.create);
 
 // update the patient by id
 
-router.put("/:id", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.update);
+router.put("/:id", verifyJWT, verifyRoles([ROLES.DOCTOR]), checkPermission(hasPatientPermission), patient.update);
 
 // delete the patient by id
 
-router.delete("/:id", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.remove);
+router.delete("/:id", verifyJWT, verifyRoles([ROLES.DOCTOR]), checkPermission(hasPatientPermission), patient.remove);
 
 // add vital to patient
 
-router.post("/:id/vitals", verifyJWT, verifyRoles(ROLES.DOCTOR), checkPermission(hasPatientPermission), patient.addPatientVital);
+router.post("/:id/vitals", verifyJWT, verifyRoles([ROLES.DOCTOR]), checkPermission(hasPatientPermission), patient.addPatientVital);
 
 // get vitals for patient
 
-router.get("/:id/vitals", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.getPatientVitals);
+router.get("/:id/vitals", verifyJWT, verifyRoles([ROLES.DOCTOR]), patient.getPatientVitals);
 
-router.get("/:id/vitals/:vitalId", verifyJWT, verifyRoles(ROLES.DOCTOR), patient.getPatientVitalHistory);
+router.get("/:id/vitals/:vitalId", verifyJWT, verifyRoles([ROLES.DOCTOR]), patient.getPatientVitalHistory);
 
 module.exports = router;

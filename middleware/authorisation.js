@@ -16,10 +16,10 @@ const verifyJWT = async (req, res, next) => {
   }
 };
 
-const verifyRoles = (allowedRole) => (req, res, next) => {
+const verifyRoles = (allowedRoles) => (req, res, next) => {
   if (!req?.user.role) return res.sendStatus(401);
   if (req.user.role === ROLES.ADMIN) return next();
-  if (allowedRole === req.user.role) return next();
+  if (allowedRoles.includes(req.user.role)) return next();
   return res.sendStatus(401);
 };
 
