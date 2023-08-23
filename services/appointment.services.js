@@ -15,8 +15,10 @@ const createAppointment = async ({
   link,
   status,
   doctorId,
-  patientId
+  patientId,
+  reminders
 }) => {
+  const t = await db.sequelize.transaction();
   try {
     const doctor = await db.User.findByPk(doctorId);
 
@@ -50,8 +52,28 @@ const createAppointment = async ({
         endDate
       }
     );
+    // create reminders
+    const newReminders = [];
+
+    reminders.forEach((minutesBeforeAppointment) => {
+      const executeAt = new Date(appointment.startDate);
+      executeAt.setMinutes(executeAt.getMinutes() - minutesBeforeAppointment);
+
+      newReminders.push({
+        status: "Pending",
+        error: false,
+        minutes: minutesBeforeAppointment,
+        appointment_id: appointment.id,
+        executeAt
+      });
+    });
+
+    await db.AppointmentReminder.bulkCreate(newReminders);
+
+    await t.commit();
     return appointment;
   } catch (err) {
+    await t.rollback();
     throw new MedicaError("Unable to create appointment.");
   }
 };

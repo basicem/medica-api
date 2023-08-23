@@ -11,6 +11,7 @@ const create = async (req, res) => {
     const value = await appointmentSchema.validateAsync(data);
     const appointment = await appointmentService.createAppointment(value);
     const patient = await patientServices.getPatientById(appointment.patient_id);
+
     // send the mail
 
     const toEmail = patient.email;

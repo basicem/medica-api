@@ -17,7 +17,8 @@ const appointmentSchema = Joi.object({
   }),
   status: Joi.string().valid("Pending", "Confirmed", "Canceled").required(),
   doctorId: Joi.number().integer().required(),
-  patientId: Joi.number().integer().required()
+  patientId: Joi.number().integer().required(),
+  reminders: Joi.array().items(Joi.number().integer()).required(),
 });
 
 module.exports = { appointmentSchema };
