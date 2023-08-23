@@ -1,5 +1,6 @@
 const patientServices = require("../services/patient.services");
 const { patientSchema } = require("../schemas/patient");
+const { patientVitalSchema } = require("../schemas/patient-vital");
 const { medicationSchema } = require("../schemas/medication");
 const { resolveError } = require("../helpers/controllers");
 
@@ -133,6 +134,42 @@ const updateMedication = async (req, res) => {
   }
 };
 
+const addPatientVital = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = { ...req.body, patientId: id };
+    const value = await patientVitalSchema.validateAsync(data);
+    const vital = await patientServices.addPatientVital(value);
+    return res.status(201).json({ id: vital.id });
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const getPatientVitals = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const vitals = await patientServices.getAllPatientVitals({ patientId: id });
+    return res.status(200).json(vitals);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
+const getPatientVitalHistory = async (req, res) => {
+  try {
+    const { id, vitalId } = req.params;
+    const vitals = await patientServices.getPatientVitalHistory({
+      ...req.query,
+      patientId: id,
+      vitalId
+    });
+    return res.status(200).json(vitals);
+  } catch (err) {
+    return resolveError(err, res);
+  }
+};
+
 module.exports = {
   create,
   get,
@@ -145,5 +182,8 @@ module.exports = {
   addMedication,
   getAllMedication,
   deleteMedication,
-  updateMedication
+  updateMedication,
+  addPatientVital,
+  getPatientVitals,
+  getPatientVitalHistory
 };

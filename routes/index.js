@@ -10,4 +10,6 @@ router.use("/api/users", require("./user.routes"));
 
 router.use("/api/appointments", require("./appointment.routes"));
 
+router.use("/api/vitals", require("./vital.routes"));
+
 module.exports = router;

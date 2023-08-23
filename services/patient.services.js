@@ -273,6 +273,106 @@ const editMedication = async (data, medicationId) => {
   }
 };
 
+const addPatientVital = async ({
+  patientId,
+  vitalId,
+  value,
+}) => {
+  const patient = await db.Patient.findOne({
+    where: { id: patientId },
+  });
+
+  if (patient === null) throw new NotFound("Patient not found.");
+
+  const vital = await db.Vital.findOne({
+    where: { id: vitalId },
+  });
+
+  if (vital === null) throw new NotFound("Vital not found.");
+
+  const optPatientVital = await db.PatientVital.findOne({
+    where: { patient_id: patientId, vital_id: vitalId, isArchived: false }
+  });
+
+  const t = await db.sequelize.transaction();
+
+  try {
+    if (optPatientVital !== null) {
+      optPatientVital.isArchived = true;
+      optPatientVital.archivedAt = new Date();
+      await optPatientVital.save();
+    }
+
+    const patientVital = await db.PatientVital.create({
+      patient_id: patientId,
+      vital_id: vitalId,
+      value,
+      isArchived: false,
+      archivedAt: null,
+    });
+
+    await t.commit();
+    return patientVital;
+  } catch (err) {
+    await t.rollback();
+    throw new MedicaError("Unable to add vital to patient.");
+  }
+};
+
+const getAllPatientVitals = async ({ patientId }) => {
+  try {
+    const patientVitals = await db.PatientVital.findAll({
+      include: [
+        { model: db.Vital, as: "vital", attributes: ["id", "name", "unitMeasurement", "lowerLimit", "upperLimit"] },
+      ],
+      where: {
+        patient_id: patientId,
+        isArchived: false
+      },
+      order: [
+        ["createdAt", "DESC"],
+      ],
+      attributes: ["id", "value", "createdAt"],
+    });
+    return patientVitals;
+  } catch (err) {
+    throw new MedicaError("Unable to return vitals for patient.");
+  }
+};
+
+const getPatientVitalHistory = async ({
+  patientId, vitalId, page, pageSize
+}) => {
+  try {
+    const { limit, offset } = getLimitAndOffset(page, pageSize);
+
+    const { rows, count } = await db.PatientVital.findAndCountAll({
+      limit,
+      offset,
+      include: [
+        { model: db.Vital, as: "vital", attributes: ["id", "name", "unitMeasurement", "lowerLimit", "upperLimit"] },
+      ],
+      where: {
+        patient_id: patientId,
+        vital_id: vitalId
+      },
+      order: [
+        ["createdAt", "DESC"],
+      ],
+      attributes: ["id", "value", "createdAt"],
+    });
+
+    return paginate({
+      count,
+      rows,
+      page,
+      pageSize,
+    });
+  } catch (err) {
+    throw new MedicaError("Unable to return vitals for patient.");
+  }
+};
+
 module.exports = {
   createPatient,
   getAllPatients,
@@ -284,5 +384,8 @@ module.exports = {
   addMedication,
   getAllMedication,
   deleteMedication,
-  editMedication
+  editMedication,
+  addPatientVital,
+  getAllPatientVitals,
+  getPatientVitalHistory
 };
