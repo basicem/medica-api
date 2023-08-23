@@ -1,4 +1,5 @@
 const vitalServices = require("../services/vital.services");
+const { vitalSchema } = require("../schemas/user");
 const { resolveError } = require("../helpers/controllers");
 
 const list = async (req, res) => {
@@ -12,7 +13,8 @@ const list = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const vital = await vitalServices.create(req.body);
+    const value = await vitalSchema.validateAsync(req.body);
+    const vital = await vitalServices.create(value);
     return res.status(201).json({ id: vital.id });
   } catch (err) {
     return resolveError(err, res);

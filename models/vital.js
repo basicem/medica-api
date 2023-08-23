@@ -9,11 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // Vital.hasMany(models.PatientVital, {
-      //   foreignKey: "patient_id",
-      //   onDelete: "CASCADE",
-      //   as: "vital",
-      // });
     }
   }
   Vital.init(
@@ -30,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         field: "name",
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true
       },
 
       unitMeasurement: {

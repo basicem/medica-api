@@ -294,12 +294,15 @@ const addPatientVital = async ({
     where: { patient_id: patientId, vital_id: vitalId, isArchived: false }
   });
 
+  const t = await db.sequelize.transaction();
+
   try {
     if (optPatientVital !== null) {
       optPatientVital.isArchived = true;
       optPatientVital.archivedAt = new Date();
       await optPatientVital.save();
     }
+
     const patientVital = await db.PatientVital.create({
       patient_id: patientId,
       vital_id: vitalId,
@@ -307,8 +310,11 @@ const addPatientVital = async ({
       isArchived: false,
       archivedAt: null,
     });
+
+    await t.commit();
     return patientVital;
   } catch (err) {
+    await t.rollback();
     throw new MedicaError("Unable to add vital to patient.");
   }
 };
