@@ -13,4 +13,6 @@ app.use(require("./routes"));
 
 app.listen(port);
 
+require("./tasks/appointments");
+
 module.exports = { app };

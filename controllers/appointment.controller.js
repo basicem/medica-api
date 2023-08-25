@@ -14,16 +14,16 @@ const create = async (req, res) => {
 
     // send the mail
 
-    const toEmail = patient.email;
-    const subject = "Appointment Confirmation";
-    const d = {
-      title: "Appointment Confirmation!",
-      message: "Please confirm your appointment by clicking the button below:",
-      confirmationLink: `http://localhost:3000/appointments/patients/${appointment.slug}`,
-      note: "Please arrive 15 minutes before the scheduled appointment time.",
-    };
+    // const toEmail = patient.email;
+    // const subject = "Appointment Confirmation";
+    // const d = {
+    //   title: "Appointment Confirmation!",
+    //   message: "Please confirm your appointment by clicking the button below:",
+    //   confirmationLink: `http://localhost:3000/appointments/patients/${appointment.slug}`,
+    //   note: "Please arrive 15 minutes before the scheduled appointment time.",
+    // };
 
-    await sendEmail(toEmail, subject, d);
+    // await sendEmail(toEmail, subject, d);
 
     return res.status(201).json(appointment);
   } catch (err) {
