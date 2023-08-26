@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 
-const { STATUS } = require("../helpers/constants");
+const { STATUS, REMINDER_STATUS } = require("../helpers/constants");
 
 const createAppointment = async ({
   title,
@@ -60,7 +60,7 @@ const createAppointment = async ({
       executeAt.setMinutes(executeAt.getMinutes() - minutesBeforeAppointment);
 
       newReminders.push({
-        status: "Pending",
+        status: REMINDER_STATUS.PENDING,
         error: false,
         minutes: minutesBeforeAppointment,
         appointment_id: appointment.id,

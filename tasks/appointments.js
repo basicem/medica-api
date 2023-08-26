@@ -4,14 +4,13 @@ const db = require("../models");
 
 const sendEmail = require("../helpers/email");
 const { REMINDER_STATUS } = require("../helpers/constants");
-const { MedicaError } = require("../exceptions");
+const { MedicaError, NotFound } = require("../exceptions");
 
-const scheduleReminder = async (reminder) => {
-  const minute = reminder.executeAt.getMinutes();
-  const hour = reminder.executeAt.getHours();
-  const day = reminder.executeAt.getDate();
-  const month = reminder.executeAt.getMonth() + 1;
-  const year = reminder.executeAt.getFullYear();
+const scheduleReminder = async (r) => {
+  const minute = r.executeAt.getMinutes();
+  const hour = r.executeAt.getHours();
+  const day = r.executeAt.getDate();
+  const month = r.executeAt.getMonth() + 1;
 
   const cronExpression = `${minute} ${hour} ${day} ${month} *`;
 
@@ -19,7 +18,7 @@ const scheduleReminder = async (reminder) => {
     cron.schedule(cronExpression, async () => {
       // find the appointment
       const appointment = await db.Appointment.findOne({
-        where: { id: reminder.appointment_id },
+        where: { id: r.appointment_id },
         include: [
           { model: db.Patient, as: "patient" },
           { model: db.User, as: "doctor" }
@@ -27,8 +26,27 @@ const scheduleReminder = async (reminder) => {
         attributes: ["id", "slug", "title", "description", "isVirtual", "link", "status", "startDate", "endDate"],
       });
 
+      if (appointment === null) {
+        throw new NotFound("Appointment not found.");
+      }
+
+      // find the reminder
+      const reminder = await db.AppointmentReminder.findOne({
+        where: { id: r.id },
+      });
+
+      if (reminder === null) {
+        throw new NotFound("Reminder not found.");
+      }
+
       // before you send it check if the executeAt is not after appointment date
-      if (reminder.executeAt > appointment.startDate) { throw new MedicaError("Failed to send email."); }
+      if (reminder.executeAt > appointment.startDate) {
+        // set job as FAILED
+        reminder.status = REMINDER_STATUS.FAILED;
+        reminder.error = "Failed to send email.";
+        await reminder.save();
+        throw new MedicaError("Failed to send email.");
+      }
 
       // create email to send
       const toEmail = appointment.patient.email;
@@ -55,11 +73,18 @@ const scheduleReminder = async (reminder) => {
         toEmail, subject, d, type: "reminder"
       });
 
+      reminder.status = REMINDER_STATUS.FAILED;
+      reminder.error = "Failed to send email.";
+      await reminder.save();
+
       // when you send the email make job COMPLETED
       reminder.status = REMINDER_STATUS.COMPLETED;
       await reminder.save();
     });
   } catch (error) {
+    const reminder = await db.AppointmentReminder.findOne({
+      where: { id: r.id },
+    });
     // set job as FAILED
     reminder.status = REMINDER_STATUS.FAILED;
     reminder.error = "Failed to send email.";
