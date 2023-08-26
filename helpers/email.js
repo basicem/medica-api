@@ -3,9 +3,9 @@ const handlebars = require("handlebars");
 const fs = require("fs");
 
 async function sendEmail({
-  toEmail, subject, d, type
+  toEmail, subject, d, templateName
 }) {
-  const source = fs.readFileSync(`templates/${type}.handlebars`, "utf8");
+  const source = fs.readFileSync(`templates/${templateName}.handlebars`, "utf8");
   const template = handlebars.compile(source);
   const html = template(d);
 

@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       AppointmentReminder.belongsTo(models.Appointment, {
-        foreignKey: "appointment_id",
+        foreignKey: "appointmentId",
         onDelete: "CASCADE",
         as: "appointment",
       });
@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
         autoIncrement: true,
+      },
+
+      appointmentId: {
+        type: DataTypes.INTEGER,
+        field: "appointment_id",
       },
 
       status: {

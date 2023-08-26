@@ -25,7 +25,7 @@ const create = async (req, res) => {
     };
 
     await sendEmail({
-      toEmail, subject, d, type: "appointment"
+      toEmail, subject, d, templateName: "appointment"
     });
 
     return res.status(201).json(appointment);

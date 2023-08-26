@@ -46,8 +46,8 @@ const createAppointment = async ({
         isVirtual,
         link,
         status,
-        doctor_id: doctorId,
-        patient_id: patientId,
+        doctorId,
+        patientId,
         startDate: combinedDateTime,
         endDate
       }
@@ -63,7 +63,7 @@ const createAppointment = async ({
         status: REMINDER_STATUS.PENDING,
         error: false,
         minutes: minutesBeforeAppointment,
-        appointment_id: appointment.id,
+        appointmentId: appointment.id,
         executeAt
       });
     });
@@ -91,7 +91,7 @@ const getAppointmentsByDoctor = async (id, { start, end }) => {
     const appointments = await db.Appointment.findAll(
       {
         where: {
-          doctor_id: doctor.id,
+          doctorId: doctor.id,
           startDate: {
             [Op.gte]: new Date(start),
           },
@@ -103,6 +103,7 @@ const getAppointmentsByDoctor = async (id, { start, end }) => {
     );
     return appointments;
   } catch (err) {
+    console.log("Err is: ", err);
     throw new MedicaError("Unable to get appointment.");
   }
 };

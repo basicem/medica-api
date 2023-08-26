@@ -70,7 +70,7 @@ const scheduleReminder = async (r) => {
 
       // send the email to the patient
       await sendEmail({
-        toEmail, subject, d, type: "reminder"
+        toEmail, subject, d, templateName: "reminder"
       });
 
       reminder.status = REMINDER_STATUS.FAILED;
