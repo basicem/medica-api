@@ -10,12 +10,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Appointment, {
-        foreignKey: "doctor_id",
+        foreignKey: "doctorId",
         onDelete: "CASCADE"
       });
 
       User.hasMany(models.Patient, {
-        foreignKey: "doctor_id",
+        foreignKey: "doctorId",
         onDelete: "CASCADE"
       });
     }

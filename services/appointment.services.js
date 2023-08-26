@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const { MedicaError, NotFound } = require("../exceptions");
 const db = require("../models");
 
-const { STATUS } = require("../helpers/constants");
+const { STATUS, REMINDER_STATUS } = require("../helpers/constants");
 
 const createAppointment = async ({
   title,
@@ -15,8 +15,10 @@ const createAppointment = async ({
   link,
   status,
   doctorId,
-  patientId
+  patientId,
+  reminders
 }) => {
+  const t = await db.sequelize.transaction();
   try {
     const doctor = await db.User.findByPk(doctorId);
 
@@ -44,14 +46,34 @@ const createAppointment = async ({
         isVirtual,
         link,
         status,
-        doctor_id: doctorId,
-        patient_id: patientId,
+        doctorId,
+        patientId,
         startDate: combinedDateTime,
         endDate
       }
     );
+    // create reminders
+    const newReminders = [];
+
+    reminders.forEach((minutesBeforeAppointment) => {
+      const executeAt = new Date(appointment.startDate);
+      executeAt.setMinutes(executeAt.getMinutes() - minutesBeforeAppointment);
+
+      newReminders.push({
+        status: REMINDER_STATUS.PENDING,
+        error: false,
+        minutes: minutesBeforeAppointment,
+        appointmentId: appointment.id,
+        executeAt
+      });
+    });
+
+    await db.AppointmentReminder.bulkCreate(newReminders);
+
+    await t.commit();
     return appointment;
   } catch (err) {
+    await t.rollback();
     throw new MedicaError("Unable to create appointment.");
   }
 };
@@ -69,7 +91,7 @@ const getAppointmentsByDoctor = async (id, { start, end }) => {
     const appointments = await db.Appointment.findAll(
       {
         where: {
-          doctor_id: doctor.id,
+          doctorId: doctor.id,
           startDate: {
             [Op.gte]: new Date(start),
           },
@@ -81,6 +103,7 @@ const getAppointmentsByDoctor = async (id, { start, end }) => {
     );
     return appointments;
   } catch (err) {
+    console.log("Err is: ", err);
     throw new MedicaError("Unable to get appointment.");
   }
 };

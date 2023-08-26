@@ -11,6 +11,7 @@ const create = async (req, res) => {
     const value = await appointmentSchema.validateAsync(data);
     const appointment = await appointmentService.createAppointment(value);
     const patient = await patientServices.getPatientById(appointment.patient_id);
+
     // send the mail
 
     const toEmail = patient.email;
@@ -19,10 +20,13 @@ const create = async (req, res) => {
       title: "Appointment Confirmation!",
       message: "Please confirm your appointment by clicking the button below:",
       confirmationLink: `http://localhost:3000/appointments/patients/${appointment.slug}`,
+      greeting: "We look forward to seeing you soon.",
       note: "Please arrive 15 minutes before the scheduled appointment time.",
     };
 
-    await sendEmail(toEmail, subject, d);
+    await sendEmail({
+      toEmail, subject, d, templateName: "appointment"
+    });
 
     return res.status(201).json(appointment);
   } catch (err) {

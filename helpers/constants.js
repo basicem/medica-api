@@ -37,6 +37,13 @@ const FREQUENCY = {
   MONTHLY: "Monthly",
 };
 
+const REMINDER_STATUS = {
+  PENDING: "Pending",
+  SCHEDULED: "Scheduled",
+  COMPLETED: "Completed",
+  FAILED: "Failed"
+};
+
 module.exports = {
-  ROLES, STATUS, DOSE_MEASUREMENT, FREQUENCY
+  ROLES, STATUS, DOSE_MEASUREMENT, FREQUENCY, REMINDER_STATUS
 };

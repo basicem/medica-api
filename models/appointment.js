@@ -10,12 +10,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Appointment.belongsTo(models.User, {
-        foreignKey: "doctor_id",
+        foreignKey: "doctorId",
         onDelete: "CASCADE",
         as: "doctor",
       });
       Appointment.belongsTo(models.Patient, {
-        foreignKey: "patient_id",
+        foreignKey: "patientId",
         onDelete: "CASCADE",
         as: "patient",
       });
@@ -30,6 +30,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         autoIncrement: true,
       },
+
+      doctorId: {
+        type: DataTypes.INTEGER,
+        field: "doctor_id",
+      },
+
+      patientId: {
+        type: DataTypes.INTEGER,
+        field: "patient_id",
+      },
+
       slug: {
         allowNull: false,
         type: DataTypes.UUID,

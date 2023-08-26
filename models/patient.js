@@ -35,6 +35,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         autoIncrement: true,
       },
+
+      doctorId: {
+        type: DataTypes.INTEGER,
+        field: "doctor_id",
+      },
+
       slug: {
         allowNull: false,
         type: DataTypes.UUID,

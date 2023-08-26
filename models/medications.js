@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
 
+      patientId: {
+        field: "patient_id",
+        type: DataTypes.INTEGER,
+      },
+
       name: {
         field: "name",
         type: DataTypes.STRING,

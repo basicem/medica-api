@@ -29,7 +29,7 @@ const createPatient = async ({
       city,
       phoneNumber,
       email,
-      doctor_id: doctorId
+      doctorId
     });
     return patient;
   } catch (err) {
@@ -68,7 +68,7 @@ const getAllPatients = async ({
       ];
     }
     patientFilters[Op.and] = [
-      { doctor_id: { [Op.eq]: doctorId } },
+      { doctorId: { [Op.eq]: doctorId } },
     ];
 
     const { rows, count } = await db.Patient.findAndCountAll({
@@ -121,7 +121,7 @@ const searchPatients = async ({ search, doctorId }) => {
               { lastName: { [Op.iLike]: `${search}%` } },
             ],
           },
-          { doctor_id: { [Op.eq]: doctorId } },
+          { doctorId: { [Op.eq]: doctorId } },
         ],
       },
       order: [
@@ -203,7 +203,7 @@ const addMedication = async ({
       doseMeasurement,
       frequency,
       prescribedOn,
-      patient_id: patientId
+      patientId
     });
     return medication;
   } catch (err) {
@@ -221,7 +221,7 @@ const getAllMedication = async ({
       limit,
       offset,
       where: {
-        patient_id: patientId
+        patientId
       },
       order: [
         ["prescribedOn", "DESC"],
@@ -291,7 +291,7 @@ const addPatientVital = async ({
   if (vital === null) throw new NotFound("Vital not found.");
 
   const optPatientVital = await db.PatientVital.findOne({
-    where: { patient_id: patientId, vital_id: vitalId, isArchived: false }
+    where: { patientId, vitalId, isArchived: false }
   });
 
   const t = await db.sequelize.transaction();
@@ -304,8 +304,8 @@ const addPatientVital = async ({
     }
 
     const patientVital = await db.PatientVital.create({
-      patient_id: patientId,
-      vital_id: vitalId,
+      patientId,
+      vitalId,
       value,
       isArchived: false,
       archivedAt: null,
@@ -326,7 +326,7 @@ const getAllPatientVitals = async ({ patientId }) => {
         { model: db.Vital, as: "vital", attributes: ["id", "name", "unitMeasurement", "lowerLimit", "upperLimit"] },
       ],
       where: {
-        patient_id: patientId,
+        patientId,
         isArchived: false
       },
       order: [
@@ -353,8 +353,8 @@ const getPatientVitalHistory = async ({
         { model: db.Vital, as: "vital", attributes: ["id", "name", "unitMeasurement", "lowerLimit", "upperLimit"] },
       ],
       where: {
-        patient_id: patientId,
-        vital_id: vitalId
+        patientId,
+        vitalId
       },
       order: [
         ["createdAt", "DESC"],

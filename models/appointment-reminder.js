@@ -1,7 +1,8 @@
 const { Model } = require("sequelize");
+const { REMINDER_STATUS } = require("../helpers/constants");
 
 module.exports = (sequelize, DataTypes) => {
-  class PatientVital extends Model {
+  class AppointmentReminder extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,19 +10,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      PatientVital.belongsTo(models.Vital, {
-        foreignKey: "vitalId",
+      AppointmentReminder.belongsTo(models.Appointment, {
+        foreignKey: "appointmentId",
         onDelete: "CASCADE",
-        as: "vital",
-      });
-      PatientVital.belongsTo(models.Patient, {
-        foreignKey: "patientId",
-        onDelete: "CASCADE",
-        as: "patient",
+        as: "appointment",
       });
     }
   }
-  PatientVital.init(
+  AppointmentReminder.init(
     {
 
       id: {
@@ -31,19 +27,33 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
 
-      vitalId: {
+      appointmentId: {
         type: DataTypes.INTEGER,
-        field: "vital_id",
+        field: "appointment_id",
       },
 
-      patientId: {
-        type: DataTypes.INTEGER,
-        field: "patient_id",
+      status: {
+        field: "status",
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: Object.values(REMINDER_STATUS),
       },
 
-      value: {
-        field: "value",
-        type: DataTypes.DOUBLE,
+      error: {
+        field: "error",
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
+
+      minutes: {
+        field: "minutes",
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
+      executeAt: {
+        field: "execute_at",
+        type: DataTypes.DATE,
         allowNull: false,
       },
 
@@ -56,26 +66,16 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: {
         field: "updated_at",
         type: DataTypes.DATE,
-      },
-
-      isArchived: {
-        field: "is_archived",
-        type: DataTypes.BOOLEAN,
         allowNull: false,
       },
 
-      archivedAt: {
-        field: "archived_at",
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
     },
     {
       sequelize,
 
-      modelName: "PatientVital",
+      modelName: "AppointmentReminder",
     }
   );
 
-  return PatientVital;
+  return AppointmentReminder;
 };
