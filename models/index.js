@@ -20,7 +20,10 @@ if (config.use_env_variable) {
 
     config.password,
 
-    config,
+    {
+      ...config,
+      logging: false,
+    }
   );
 }
 

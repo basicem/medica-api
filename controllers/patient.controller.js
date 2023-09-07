@@ -3,6 +3,7 @@ const { patientSchema } = require("../schemas/patient");
 const { patientVitalSchema } = require("../schemas/patient-vital");
 const { medicationSchema } = require("../schemas/medication");
 const { resolveError } = require("../helpers/controllers");
+const { logger } = require("../logging/logger");
 
 const list = async (req, res) => {
   try {
@@ -61,8 +62,10 @@ const create = async (req, res) => {
     const data = { ...req.body, doctorId: id };
     const value = await patientSchema.validateAsync(data);
     const patient = await patientServices.createPatient(value);
+    logger.info(`Created patient with id=${patient.id}`);
     return res.status(201).json({ id: patient.id });
   } catch (err) {
+    logger.error(`Error creating item: ${err.message}`);
     return resolveError(err, res);
   }
 };
@@ -73,8 +76,10 @@ const update = async (req, res) => {
     const data = await patientSchema.validateAsync({ ...req.body, doctorId: id });
     const patientParams = req.params;
     const patient = await patientServices.editPatient(patientParams.id, data);
+    logger.info(`Updated patient with id=${patient.id}`);
     return res.status(200).json({ id: patient.id });
   } catch (err) {
+    logger.error(`Error updating item: ${err.message}`);
     return resolveError(err, res);
   }
 };
@@ -83,8 +88,10 @@ const remove = async (req, res) => {
   try {
     const { id } = req.params;
     await patientServices.deletePatient(id);
+    logger.info(`Deleted patient with id=${id}`);
     return res.status(204).send();
   } catch (err) {
+    logger.error(`Error deleting item: ${err.message}`);
     return resolveError(err, res);
   }
 };
@@ -95,8 +102,10 @@ const addMedication = async (req, res) => {
     const data = { ...req.body, patientId: id };
     const value = await medicationSchema.validateAsync(data);
     const medication = await patientServices.addMedication(value);
+    logger.info(`Added medication with id=${id} to patient with id=${medication.id}`);
     return res.status(201).json({ id: medication.id });
   } catch (err) {
+    logger.error(`Error creating item: ${err.message}`);
     return resolveError(err, res);
   }
 };
@@ -140,8 +149,10 @@ const addPatientVital = async (req, res) => {
     const data = { ...req.body, patientId: id };
     const value = await patientVitalSchema.validateAsync(data);
     const vital = await patientServices.addPatientVital(value);
+    logger.info(`Added vital with id=${vital.vitalId} to patient with id=${vital.patientId}`);
     return res.status(201).json({ id: vital.id });
   } catch (err) {
+    logger.error(`Error creating item: ${err.message}`);
     return resolveError(err, res);
   }
 };

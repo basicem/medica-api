@@ -73,10 +73,7 @@ const scheduleReminder = async (r) => {
         toEmail, subject, d, templateName: "reminder"
       });
 
-      reminder.status = REMINDER_STATUS.FAILED;
-      reminder.error = "Failed to send email.";
-      await reminder.save();
-
+      console.log("Helou?, ", reminder.status);
       // when you send the email make job COMPLETED
       reminder.status = REMINDER_STATUS.COMPLETED;
       await reminder.save();
