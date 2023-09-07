@@ -4,13 +4,15 @@ const patientServices = require("../services/patient.services");
 const { appointmentSchema } = require("../schemas/appointment");
 const { resolveError } = require("../helpers/controllers");
 
+const { logger } = require("../logging/logger");
+
 const create = async (req, res) => {
   try {
     const { id } = req.user;
     const data = { ...req.body, doctorId: id };
     const value = await appointmentSchema.validateAsync(data);
     const appointment = await appointmentService.createAppointment(value);
-    const patient = await patientServices.getPatientById(appointment.patient_id);
+    const patient = await patientServices.getPatientById(appointment.patientId);
 
     // send the mail
 
@@ -28,8 +30,12 @@ const create = async (req, res) => {
       toEmail, subject, d, templateName: "appointment"
     });
 
+    // Log an info message for creating appointment
+    logger.info(`Created appointment with id=${appointment.id} to patient with id=${appointment.patientId}`);
+
     return res.status(201).json(appointment);
   } catch (err) {
+    logger.error(`Error creating item: ${err.message}`);
     return resolveError(err, res);
   }
 };

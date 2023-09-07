@@ -103,7 +103,6 @@ const getAppointmentsByDoctor = async (id, { start, end }) => {
     );
     return appointments;
   } catch (err) {
-    console.log("Err is: ", err);
     throw new MedicaError("Unable to get appointment.");
   }
 };
