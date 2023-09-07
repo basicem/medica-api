@@ -50,7 +50,8 @@ const makeUser = async (data) => {
 describe("GET users", async () => {
   let token;
 
-  before(async () => {
+  beforeEach(async () => {
+    await db.User.destroy({ truncate: { cascade: true } });
     const salt = await bcrypt.genSaltSync(10, "a");
     await db.User.create({
       firstName: "Joe",
@@ -66,7 +67,9 @@ describe("GET users", async () => {
     token = response.body;
   });
 
-  beforeEach(async () => {
+  after(async () => {
+    await db.Appointment.destroy({ truncate: { cascade: true } });
+    await db.Patient.destroy({ truncate: { cascade: true } });
     await db.User.destroy({ truncate: { cascade: true } });
   });
 
@@ -78,7 +81,8 @@ describe("GET users", async () => {
 
     // assert
     expect(response.status).to.equal(200);
-    expect(response.body.rows).to.have.lengthOf(2);
+    // 2 added and 1 which is admin
+    expect(response.body.rows).to.have.lengthOf(3);
   });
 
   it("Get all users filtered by name", async () => {
@@ -117,14 +121,15 @@ describe("GET users", async () => {
 
     // assert
     expect(response.status).to.equal(200);
-    expect(response.body.rows).to.have.lengthOf(2);
+    expect(response.body.rows).to.have.lengthOf(3);
   });
 });
 
 describe("POST users", async () => {
   let token;
 
-  before(async () => {
+  beforeEach(async () => {
+    await db.User.destroy({ truncate: { cascade: true } });
     const salt = await bcrypt.genSaltSync(10, "a");
     await db.User.create({
       firstName: "Joe",
@@ -140,7 +145,9 @@ describe("POST users", async () => {
     token = response.body;
   });
 
-  beforeEach(async () => {
+  after(async () => {
+    await db.Appointment.destroy({ truncate: { cascade: true } });
+    await db.Patient.destroy({ truncate: { cascade: true } });
     await db.User.destroy({ truncate: { cascade: true } });
   });
 
@@ -155,7 +162,7 @@ describe("POST users", async () => {
 
     // assert
     expect(response1.status).to.equal(201);
-    expect(countUsers).to.equal(1);
+    expect(countUsers).to.equal(2);
   });
 
   it("Post two users with the same email", async () => {
@@ -172,6 +179,6 @@ describe("POST users", async () => {
     // assert
     expect(response1.status).to.equal(201);
     expect(response2.status).to.equal(400);
-    expect(countUsers).to.equal(1);
+    expect(countUsers).to.equal(2);
   });
 });

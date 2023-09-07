@@ -1,7 +1,6 @@
 const { faker } = require("@faker-js/faker");
 
 const chai = require("chai");
-const sinon = require("sinon");
 chai.use(require("sinon-chai"));
 const request = require("supertest");
 const bcrypt = require("bcrypt");
@@ -47,6 +46,12 @@ describe("GET appointments", async () => {
     await db.Appointment.destroy({ truncate: { cascade: true } });
   });
 
+  after(async () => {
+    await db.Appointment.destroy({ truncate: { cascade: true } });
+    await db.Patient.destroy({ truncate: { cascade: true } });
+    await db.User.destroy({ truncate: { cascade: true } });
+  });
+
   const makeAppointment = async (data) => {
     const start = new Date("2023-10-01").getTime();
     const end = new Date("2023-10-31").getTime();
@@ -59,8 +64,8 @@ describe("GET appointments", async () => {
       link = isVirtual ? faker.internet.url() : "",
       time = "15:00",
       status = faker.helpers.arrayElement(["Confirmed", "Pending", "Canceled"]),
-      doctor_id = doctor.id,
-      patient_id = patient.id,
+      doctorId = doctor.id,
+      patientId = patient.id,
     } = data;
 
     const [hours, minutes] = time.split(":");
@@ -77,8 +82,8 @@ describe("GET appointments", async () => {
       isVirtual,
       link,
       status,
-      doctor_id,
-      patient_id,
+      doctorId,
+      patientId,
       startDate: combinedDateTime,
       endDate
     });
@@ -167,6 +172,12 @@ describe("POST appointments", async () => {
     await db.Appointment.destroy({ truncate: { cascade: true } });
   });
 
+  after(async () => {
+    await db.Appointment.destroy({ truncate: { cascade: true } });
+    await db.Patient.destroy({ truncate: { cascade: true } });
+    await db.User.destroy({ truncate: { cascade: true } });
+  });
+
   const returnAppointment = (data) => {
     const {
       title = faker.lorem.words(10),
@@ -178,6 +189,7 @@ describe("POST appointments", async () => {
       time = "15:00",
       status = faker.helpers.arrayElement(["Confirmed", "Pending", "Canceled"]),
       patientId = patient.id,
+      reminders = []
     } = data;
 
     const appointment = {
@@ -189,7 +201,8 @@ describe("POST appointments", async () => {
       isVirtual,
       link,
       status,
-      patientId
+      patientId,
+      reminders
     };
 
     return appointment;
