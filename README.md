@@ -31,6 +31,29 @@ To configure the PostgreSQL database connection, you need to set the following e
 - `DB_USERNAME`: The username for PostgreSQL authentication.
 - `DB_PASSWORD`: The password for PostgreSQL authentication.
 
+- ## Database Migration and Seeding
+
+### Step 1: Database Creation
+
+Before running migrations and seeders, make sure you have created the database where you want to apply these changes.
+
+### Step 2: Running Migrations
+
+To apply all pending migrations and create the corresponding database tables, use the following command:
+
+```bash
+npx sequelize-cli db:migrate
+```
+
+### Step 2: Running Seeders
+
+To seed all initial data, use the following command:
+
+```
+npx sequelize-cli db:seed:all
+```
+
+
 ## Email Configuration (Using Mailtrap)
 
 Before configuring Mailtrap, make sure you have the following:
