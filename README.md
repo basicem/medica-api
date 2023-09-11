@@ -15,9 +15,13 @@ cd medica-api
 npm install
 ```
 
-The app runs on a specific port, which you need to configure in your `.env` file ( frontent app runs on 3000):
+The frontend app runs on port `3000` by default. This app runs on a specific port, which you need to configure in your `.env` file. I used port `3001` as a default, but you can customize it to your preferences. Create a `.env` file in the root directory of the project if it doesn't already exist. You have .env.example of all env variables you should configure
 
-- **Port**: `3001`
+```
+     PORT=YOUR_CUSTOM_PORT
+ ```
+
+- `PORT`: `3001`
 
 ### Configuration
 
