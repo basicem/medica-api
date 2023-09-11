@@ -41,18 +41,12 @@ Follow these steps to configure Mailtrap with your project:
 
 2. **Update Project Configuration**
 
-   Locate the configuration file or section in your project where you set up email settings. Typically, this is found in your application's settings or a configuration file.
-
-   Update the email settings with the following SMTP details provided by Mailtrap in .env:
+   Update the email settings with the following SMTP details provided by Mailtrap in .env file:
 
    - **SMTP Server**: `smtp.mailtrap.io`
    - **Port**: `2525` (or the port number provided by Mailtrap)
    - **Username**: Your Mailtrap username
    - **Password**: Your Mailtrap password
-
-3. **Test Email Sending**
-
-   To test if email sending is working
 
 To start the project open the terminal and type text below:
 
