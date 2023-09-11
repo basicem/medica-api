@@ -45,7 +45,7 @@ To apply all pending migrations and create the corresponding database tables, us
 npx sequelize-cli db:migrate
 ```
 
-### Step 2: Running Seeders
+### Step 3: Running Seeders
 
 To seed all initial data, use the following command:
 
