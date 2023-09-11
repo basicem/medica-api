@@ -85,6 +85,17 @@ npm run dev
 
 From here the project is running.
 
+## Logging
+
+The project includes a logging system to track and record important events and errors. Two different logging levels are used to categorize and prioritize log messages:
+
+- **Info**: Provides general information about the application's operation.
+- **Error**: Records critical errors that need immediate investigation.
+
+- ### Log Output
+
+Log messages are sorted into files based on their respective dates. To access logs, you need to check the specified log files or review the console output.
+
 ## Running Tests
 
 The project includes tests. To run them open the terminal and type text below:
