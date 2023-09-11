@@ -2,7 +2,7 @@
 
 Application developed for healthcare industry using RESTful APIs (Node, Sequelize, React, Postgres) for doctors and administrators. Included features like appointment scheduling, patient management, vital signs recording, and medication tracking. Integrated email reminders to enhance appointment communication.
 
-Our application is structured as two separate projects, each responsible for a distinct aspect of the application: the backend and the frontend. This repository is dedicated to the backend portion of the application. [Frontend Repository](https://github.com/basicem/medica-web).
+Application is structured as two separate projects, each responsible for a distinct aspect of the application: the backend and the frontend. This repository is dedicated to the backend portion of the application, [frontend Repository](https://github.com/basicem/medica-web).
 
 ## Getting started
 
@@ -17,7 +17,7 @@ cd medica-api
 npm install
 ```
 
-The frontend app runs on port `3000` by default. This app runs on a specific port, which you need to configure in your `.env` file. I used port `3001` as a default, but you can customize it to your preferences. You have .env.example of all env variables you should configure. For example, to run the backend on port `3001`, use:
+The frontend runs on port `3000` by default. This app runs on a specific port, which you need to configure in your `.env` file. I used port `3001` as a default, but you can customize it to your preferences. You have .env.example of all env variables you should configure. For example, to run the backend on port `3001`, use:
 
 ```
     PORT=3001
