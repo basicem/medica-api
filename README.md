@@ -35,7 +35,8 @@ To configure the PostgreSQL database connection, you need to set the following e
 
 ### Step 1: Database Creation
 
-Before running migrations and seeders, make sure you have created the database where you want to apply these changes.
+This project uses a predefined set of constant names for database configuration. These constants can be found in the `config.js` file in the project's configuration directory. Two different database names were used. 'medica' was used for development and 'test_medica' was used for tests.
+Before running migrations and seeders, make sure you have created the database where you want to apply these changes. 
 
 ### Step 2: Running Migrations
 
