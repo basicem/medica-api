@@ -31,7 +31,7 @@ To configure the PostgreSQL database connection, you need to set the following e
 - `DB_USERNAME`: The username for PostgreSQL authentication.
 - `DB_PASSWORD`: The password for PostgreSQL authentication.
 
-- ## Database Migration and Seeding
+## Database Migration and Seeding
 
 ### Step 1: Database Creation
 
@@ -84,3 +84,10 @@ npm run dev
 ```
 
 From here the project is running.
+
+## Running Tests
+
+The project includes tests. To run them open the terminal and type text below:
+```shell
+npm run test
+```
