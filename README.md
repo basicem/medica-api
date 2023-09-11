@@ -15,9 +15,13 @@ cd medica-api
 npm install
 ```
 
-You should have PostgreSQL installed on your system. If not, you can download it from the [official PostgreSQL website](https://www.postgresql.org/download/).
+The app runs on a specific port, which you need to configure in your `.env` file ( frontent app runs on 3000):
+
+- **Port**: `3001`
 
 ### Configuration
+
+You should have PostgreSQL installed on your system. If not, you can download it from the [official PostgreSQL website](https://www.postgresql.org/download/).
 
 To configure the PostgreSQL database connection, you need to set the following environment variables:
 
