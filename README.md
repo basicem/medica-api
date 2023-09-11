@@ -2,7 +2,7 @@
 
 Application developed for healthcare industry using RESTful APIs (Node, Sequelize, React, Postgres) for doctors and administrators. Included features like appointment scheduling, patient management, vital signs recording, and medication tracking. Integrated email reminders to enhance appointment communication.
 
-Our application is structured as two separate projects, each responsible for a distinct aspect of the application: the backend and the frontend. This repository is dedicated to the backend portion of the application. [Frontend Repository]([link-to-frontend-repo](https://github.com/basicem/medica-web)).
+Our application is structured as two separate projects, each responsible for a distinct aspect of the application: the backend and the frontend. This repository is dedicated to the backend portion of the application. [Frontend Repository]([https://github.com/basicem/medica-web]).
 
 ## Getting started
 
