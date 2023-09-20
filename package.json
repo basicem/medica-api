@@ -5,6 +5,7 @@
   "main": "startup.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config startup.js",
+    "start": "node -r dotenv/config startup.js",
     "test": "cross-env NODE_ENV=test mocha ./tests/*/** -r dotenv/config",
     "pretest": "cross-env NODE_ENV=test npm run db:reset",
     "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
