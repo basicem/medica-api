@@ -1,5 +1,5 @@
 const vitalServices = require("../services/vital.services");
-const { vitalSchema } = require("../schemas/user");
+const { vitalSchema } = require("../schemas/vital");
 const { resolveError } = require("../helpers/controllers");
 const { logger } = require("../logging/logger");
 

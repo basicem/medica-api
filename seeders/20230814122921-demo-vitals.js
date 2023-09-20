@@ -9,7 +9,8 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    await queryInterface.bulkInsert("Vitals", [{
+
+    const vitalsToInsert = [{
       name: "Weight",
       unit_measurement: "kg",
       lower_limit: 30,
@@ -48,7 +49,20 @@ module.exports = {
       upper_limit: 90,
       created_at: new Date(),
       updated_at: new Date(),
-    }], {});
+    }];
+
+    try {
+      for (const item of vitalsToInsert) {
+        const existingRecord = await queryInterface.rawSelect("Vitals", {
+          where: { name: item.name },
+        }, ["id"]);
+
+        if (!existingRecord) {
+          await queryInterface.bulkInsert("Vitals", [item], {});
+        }
+      }
+    } catch (error) {
+    }
   },
 
   async down(queryInterface, Sequelize) {

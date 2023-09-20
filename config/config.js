@@ -11,6 +11,14 @@ module.exports = {
     dialect: "postgres",
     port: 5432
   },
+  production: {
+    username: DB_USERNAME,
+    password: DB_PASSWORD,
+    database: "medica",
+    host: DB_HOST,
+    dialect: "postgres",
+    port: 5432
+  },
   test: {
     username: DB_USERNAME,
     password: DB_PASSWORD,

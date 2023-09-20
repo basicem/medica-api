@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  db:
+    restart: always
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: medica
+    ports:
+      - 5432:5432 # Expose the PostgreSQL port
+    volumes:
+      - pgdata14:/var/lib/postgresql/data/
+      - .:/mnt
+
+  backend:
+    build:
+      context: ./medica-api
+    ports:
+      - 3001:3001
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db
+    command: >
+      sh -c "npm install && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm start"
+
+  frontend:
+    build:
+      context: ./medica-web
+    ports:
+      - 3000:3000
+volumes:
+  pgdata14:
+
+
